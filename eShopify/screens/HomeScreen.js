@@ -79,35 +79,6 @@ export default class HomeScreen extends React.Component {
 	}
 }
 
-// const mainRoot = {
-// 	root: {
-// 		children: [
-// 			{
-// 				stack: {
-// 					children: [
-// 						{
-// 							component: {
-// 								name: 'Home'
-// 							}
-// 						},
-// 					]
-// 				}
-// 			},
-// 			{
-// 				stack: {
-// 					children: [
-// 						{
-// 							component: {
-// 								name: 'Profile'
-// 							}
-// 						}
-// 					]
-// 				}
-// 			}
-// 		]
-// 	}
-// };
-
 HomeScreen.options = {
 	topBar: {
 		title: {
