@@ -13,7 +13,19 @@ export default {
 	    height: 200,
 	    width: 200
 	},
-
+	chart: {
+		marginTop:15,
+		marginBottom:15,
+		marginLeft:15,
+		marginRight:15,
+		justifyContent: 'center',
+	    alignItems: 'center',
+	},
+	chartTitle: {
+		fontSize: 30,
+	    fontWeight: "600",
+	    textAlign: 'center',
+	},
 	// for modal in register
 	registerFormCountryInput: {
 	    height: 43,

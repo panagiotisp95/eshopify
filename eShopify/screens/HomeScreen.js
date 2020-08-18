@@ -1,7 +1,5 @@
 import * as React from 'react';
 import styles from "./styles/style";
-import TouchableScale from 'react-native-touchable-scale';
-import LinearGradient from 'react-native-linear-gradient';
 import { ListItem } from 'react-native-elements';
 import { RNNDrawer } from "react-native-navigation-drawer-extension";
 import { Navigation }  from "react-native-navigation"
@@ -34,6 +32,27 @@ export default class HomeScreen extends React.Component {
     	Navigation.events().bindComponent(this);
   	}
 
+	navigationButtonPressed({ buttonId }) {
+		RNNDrawer.showDrawer({
+			component: {
+				name: "SideMenu",
+				passProps: {
+					animationOpenTime: 300,
+					animationCloseTime: 300,
+					direction: "left",
+					dismissWhenTouchOutside: true,
+					fadeOpacity: 0.6,
+					drawerScreenWidth: "70%" || 445,
+					drawerScreenHeight: "100%" || 700,
+					style: {
+						backgroundColor: "#dcdee0",
+					},
+					parentComponentId: this.props.componentId,
+				},
+			}
+		});
+	}
+
 	render() {
 		return (
 			<View style={styles.root}><View>
@@ -55,27 +74,6 @@ export default class HomeScreen extends React.Component {
 				}
 			</View></View>
 		);
-	}
-
-	navigationButtonPressed({ buttonId }) {
-		RNNDrawer.showDrawer({
-			component: {
-				name: "SideMenu",
-				passProps: {
-					animationOpenTime: 300,
-					animationCloseTime: 300,
-					direction: "left",
-					dismissWhenTouchOutside: true,
-					fadeOpacity: 0.6,
-					drawerScreenWidth: "70%" || 445,
-					drawerScreenHeight: "100%" || 700,
-					style: {
-						backgroundColor: "#dcdee0",
-					},
-					parentComponentId: this.props.componentId,
-				},
-			}
-		});
 	}
 }
 

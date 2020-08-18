@@ -14,7 +14,7 @@ import DashboardScreen from"./screens/DashboardScreen"
 import EditStoreScreen from"./screens/AddEditStoreScreen"
 import ProfileScreen from"./screens/ProfileScreen"
 import StoreScreen from"./screens/StoreScreen"
-import OrdersScreen from"./screens/StoreScreen"
+import OrdersScreen from"./screens/OrdersScreen"
 
 import { 
 		View,
@@ -31,7 +31,7 @@ Navigation.registerComponent('Settings', () => SettingsScreen);
 Navigation.registerComponent('Confirm', () => ConfirmScreen);
 Navigation.registerComponent('ForgotPassword', () => ForgotPasswordScreen);
 Navigation.registerComponent('Dashboard', () => DashboardScreen);
-Navigation.registerComponent('EditStore', () => EditStoreScreen);
+Navigation.registerComponent('AddEditStore', () => EditStoreScreen);
 Navigation.registerComponent('Profile', () => ProfileScreen);
 Navigation.registerComponent('Store', () => StoreScreen);
 Navigation.registerComponent('Orders', () => OrdersScreen);

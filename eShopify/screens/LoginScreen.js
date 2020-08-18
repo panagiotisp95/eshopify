@@ -1,5 +1,6 @@
 import * as React from 'react';
 import styles from "./styles/LoginStyles";
+import { Navigation }  from "react-native-navigation"
 import { Keyboard, 
 		 Text,
 		 Button, 
@@ -9,8 +10,6 @@ import { Keyboard,
 		 Alert, 
 		 KeyboardAvoidingView
 		} from 'react-native';
-
-const { Navigation } = require('react-native-navigation');
 
 export default class LoginScreen extends React.Component {
 	state = {

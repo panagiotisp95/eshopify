@@ -13,15 +13,7 @@ export default class SettingsScreen extends React.Component {
 	render() {
 		return (
 			<View style={styles.root}><View>
-				<Button
-					title='Push Settings Screen'
-					color='#710ce3'
-					onPress={() => Navigation.push(this.props.componentId, {
-						component: {
-							name: 'Home'
-						}
-					})} 
-				/>
+				
 			</View></View>
 		);
 	}

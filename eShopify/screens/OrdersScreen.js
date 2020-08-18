@@ -11,14 +11,14 @@ import { Keyboard,
 		 KeyboardAvoidingView
 		} from 'react-native';
 
-export default class HomeScreen extends React.Component {
-  	constructor(props) {
+export default class OrdersScreen extends React.Component {
+	constructor(props) {
     	super(props);
     	Navigation.events().bindComponent(this);
   	}
 
-	navigationButtonPressed({ buttonId }) {
-		
+  	navigationButtonPressed({ buttonId }) {
+  		
 	}
 
 	render() {
@@ -28,14 +28,12 @@ export default class HomeScreen extends React.Component {
 			</View></View>
 		);
 	}
-
-	
 }
 
-HomeScreen.options = {
+OrdersScreen.options = {
 	topBar: {
 		title: {
-			text: 'Store'
+			text: 'Orders'
 		}
 	}
 };
