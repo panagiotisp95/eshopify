@@ -4,7 +4,6 @@ import TouchableScale from 'react-native-touchable-scale';
 import LinearGradient from 'react-native-linear-gradient';
 import { ListItem } from 'react-native-elements';
 import { RNNDrawer } from "react-native-navigation-drawer-extension";
-import { Navigation }  from "react-native-navigation"
 import { Keyboard, 
 		 Text,
 		 Button, 
@@ -15,6 +14,7 @@ import { Keyboard,
 		 KeyboardAvoidingView
 		} from 'react-native';
 
+const { Navigation } = require('react-native-navigation');
 const list = [
 	{
 	    name: 'Amy Farha',
@@ -29,10 +29,46 @@ const list = [
 ]
 
 export default class HomeScreen extends React.Component {
+  	state = {
+    	email: '',
+    	password: '',
+    	validEmail: false,
+    	validPassword: false,
+    	isVisible :false,
+  	}
+
   	constructor(props) {
     	super(props);
     	Navigation.events().bindComponent(this);
   	}
+
+	handleEmail = (text) => {
+		let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+		this.setState({ email: text })
+
+		if (reg.test(text) === false) {
+			this.setState({ validEmail: false })
+			return false;
+		}
+		else {
+			this.setState({ validEmail: true })
+		}
+	}
+
+	handlePassword = (text) => {
+		if (text.length > 10){
+			this.setState({validPassword: true})
+		}else{
+			this.setState({validPassword: false})
+		}
+		this.setState({ password: text })
+	}
+
+	onLoginPress(email, password) {
+		if(email=="aa@gg.cc"){
+			Navigation.setRoot(mainRoot)
+		}
+	}
 
 	render() {
 		return (
@@ -79,34 +115,34 @@ export default class HomeScreen extends React.Component {
 	}
 }
 
-// const mainRoot = {
-// 	root: {
-// 		children: [
-// 			{
-// 				stack: {
-// 					children: [
-// 						{
-// 							component: {
-// 								name: 'Home'
-// 							}
-// 						},
-// 					]
-// 				}
-// 			},
-// 			{
-// 				stack: {
-// 					children: [
-// 						{
-// 							component: {
-// 								name: 'Profile'
-// 							}
-// 						}
-// 					]
-// 				}
-// 			}
-// 		]
-// 	}
-// };
+const mainRoot = {
+	root: {
+		children: [
+			{
+				stack: {
+					children: [
+						{
+							component: {
+								name: 'Home'
+							}
+						},
+					]
+				}
+			},
+			{
+				stack: {
+					children: [
+						{
+							component: {
+								name: 'Settings'
+							}
+						}
+					]
+				}
+			}
+		]
+	}
+};
 
 HomeScreen.options = {
 	topBar: {

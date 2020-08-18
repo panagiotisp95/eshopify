@@ -1,15 +1,18 @@
 import * as React from 'react';
-import { useState } from 'react'
-import styles from "./style";
-import {Picker} from '@react-native-community/picker';
-import {PixelRatio,Image,Animated,StyleSheet,Dimensions,
-		Pressable,Switch,Modal,SafeAreaView,ScrollView,
-		TouchableOpacity,Keyboard,Text,Button,View,TextInput,
-		TouchableWithoutFeedback,Alert,KeyboardAvoidingView} from 'react-native';
+import styles from "./styles/style";
 import RNCountry from "react-native-countries";
 import RNPickerSelect from 'react-native-picker-select';
-import {Chevron} from 'react-native-shapes'
 import ImagePicker from 'react-native-image-picker';
+import {Chevron} from 'react-native-shapes'
+import {useState} from 'react'
+import {Picker} from '@react-native-community/picker';
+import {
+			PixelRatio,Image,Animated,StyleSheet,Dimensions,
+			Pressable,Switch,Modal,SafeAreaView,ScrollView,
+			TouchableOpacity,Keyboard,Text,Button,View,TextInput,
+			TouchableWithoutFeedback,Alert,KeyboardAvoidingView
+		} from 'react-native';
+
 
 const { Navigation } = require('react-native-navigation');
 const standardBorderColor = '#eaeaea';
@@ -371,10 +374,10 @@ export default class RegisterScreen extends React.Component {
 							textInputProps={{ underlineColorAndroid: 'cyan' }}
 							Icon={() => {return <Chevron size={1.5} color="gray" />;}}/>
 			        <Button
-			          title="Register"
-			          disabled={!this.state.validEmail || !this.state.validPassword}
-			          accessibilityLabel="Register button"
-			          onPress={() => this.onRegisterPress()}
+						title="Register"
+						disabled={!this.state.validEmail || !this.state.validPassword}
+						accessibilityLabel="Register button"
+						onPress={() => this.onRegisterPress()}
 			        />
 			      </View>
 			    </View>
@@ -387,23 +390,23 @@ export default class RegisterScreen extends React.Component {
 }
 
 const mainRoot = {
-  root: {
-    stack: {
-      children: [
-        {
-          component: {
-            name: 'Home'
-          }
-        },
-      ]
-    }
-  }
+	root: {
+		stack: {
+			children: [
+				{
+					component: {
+						name: 'Home'
+					}
+				},
+			]
+		}
+	}
 };
 
 RegisterScreen.options = {
-  topBar: {
-    title: {
-      text: 'Register'
-    }
-  }
+	topBar: {
+		title: {
+			text: 'Register'
+		}
+	}
 };
