@@ -1,0 +1,6 @@
+module Pods_eShopify {
+  umbrella header "Pods-eShopify-umbrella.h"
+
+  export *
+  module * { export * }
+}
