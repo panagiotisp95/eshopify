@@ -6,18 +6,35 @@ import ImagePicker from 'react-native-image-picker';
 import {Chevron} from 'react-native-shapes'
 import {useState} from 'react'
 import {Picker} from '@react-native-community/picker';
+import realmContainer from '../realmContainer'
 import {
 			PixelRatio,Image,Animated,StyleSheet,Dimensions,
 			Pressable,Switch,Modal,SafeAreaView,ScrollView,
 			TouchableOpacity,Keyboard,Text,Button,View,TextInput,
 			TouchableWithoutFeedback,Alert,KeyboardAvoidingView
 		} from 'react-native';
+import {getRealmApp} from '../getRealmApp';
 
+import { 
+    PRODUCTS_SCHEMA,
+    ProductsSchema,  
+    ORDERS_SCHEMA, 
+    OrdersSchema, 
+    STORES_SCHEMA, 
+    StoresSchema, 
+    USERS_SCHEMA, 
+    UsersSchema} from '../allSchemas';
 
+const databaseOptions = {
+  schema: [ProductsSchema, OrdersSchema, UsersSchema, StoresSchema],
+  schemaVersion: 0
+};
 const { Navigation } = require('react-native-navigation');
 const standardBorderColor = '#eaeaea';
 const errorBorderColor = '#f51b07';
 const okBorderColor = '#5eeb34';
+
+
 
 export default class RegisterScreen extends React.Component {
 	state = {};
@@ -94,7 +111,7 @@ export default class RegisterScreen extends React.Component {
 			this.password.borderColor[index] = errorBorderColor;
 			this.password.isValid[index] = false;
 		}
-		
+		this.setState({ password: this.password })
 	}
 
 	handlePassword1 = (str) => {
@@ -182,41 +199,50 @@ export default class RegisterScreen extends React.Component {
 	}
 
 	onRegisterPress() {
+		isCorrect = true;
 		if(this.state.country.text==''){
+			isCorrect = false;
 			this.country.borderColor = errorBorderColor;
 			this.setState({country: this.country});
 		}
 		if(this.state.city.text==''){
+			isCorrect = false;
 			this.city.borderColor = errorBorderColor;
 			this.setState({city: this.city});
 			this.cityInput.focus();
 		}
 		if(this.state.postalCode.text==''){
+			isCorrect = false;
 			this.postalCode.borderColor = errorBorderColor;
 			this.setState({postalCode: this.postalCode});
 			this.postalCodeInput.focus();
 		}
 		if(this.state.address.text[0]=='' && this.state.address.text[1]==''){
+			isCorrect = false;
 			this.address.borderColor = errorBorderColor;
 			this.setState({address: this.address});
 			this.address1Input.focus();
 		}
 		if(this.state.phone.text==''){
+			isCorrect = false;
 			this.phone.borderColor = errorBorderColor;
 			this.setState({phone: this.phone});
 			this.phoneInput.focus();
 		}
 		if(this.state.surname.text==''){
+			isCorrect = false;
 			this.surname.borderColor = errorBorderColor;
 			this.setState({surname: this.surname});
 			this.surnameInput.focus();
 		}
 		if(this.state.name.text==''){
+			isCorrect = false;
 			this.name.borderColor = errorBorderColor;
 			this.setState({surname: this.surname});
 			this.nameInput.focus();
 		}
 		if(this.state.password.text[0]=='' || this.state.password.text[1]==''){
+			isCorrect = false;
 			this.password.borderColor[0] = errorBorderColor;
 			this.password.borderColor[1] = errorBorderColor;
 			this.setState({password: this.password});
@@ -225,11 +251,64 @@ export default class RegisterScreen extends React.Component {
 			this.password1.focus();
 		}
 		if(this.state.email.text==''){
+			isCorrect = false;
 			this.email.borderColor = errorBorderColor;
 			this.setState({email: this.email});
 			this.emailInput.focus();
 		}
-		//Navigation.setRoot(mainRoot)
+		if(isCorrect){
+			this.registerToDB()
+			Navigation.push(this.props.componentId, {
+				component: {
+					name: 'Confirm'
+				}
+			})
+		}
+	}
+
+	registerToDB(){
+		try {
+			Realm.open(databaseOptions).then(realm => {
+				const res = realm.objects(USERS_SCHEMA).filtered(`email="${this.state.email.text}"`)
+			    if(Object.keys(res).length === 0){
+			    	console.log("User not found")
+			    	size = realm.objects(USERS_SCHEMA).length
+				  	realm.write(() => {
+				    	realm.create(USERS_SCHEMA, 
+				    	{
+				    		user_id:size+1 ,
+				    		email: this.state.email.text, 
+				    		password: this.state.password.text[0],
+				    		name: this.state.name.text,
+				    		surname: this.state.surname.text,
+				    		phone: this.state.phone.text,
+				    		address: this.state.address.text[0]+'~'+this.state.address.text[1],
+				    		postalCode: this.state.postalCode.text,
+				    		city: this.state.city.text,
+				    		country: this.state.country.text,
+				    		picture: this.state.avatarSource
+				    	});
+				  	});
+			    }else{
+			    	console.log("User found")
+			    	showAlert('Account Exists', 'Account with the email provided already exists')
+			    }
+			});
+
+		} catch (e) {
+		  	console.log("Error ", e);
+		}
+	}
+
+	showAlert(title, msg){
+		Alert.alert(
+	      	title,
+	      	msg,
+			[
+				{ text: "OK", onPress: () => console.log("OK Pressed") }
+			],
+			{ cancelable: false }
+	    );
 	}
 
 	render() {
@@ -388,20 +467,6 @@ export default class RegisterScreen extends React.Component {
 		);
 	}
 }
-
-const mainRoot = {
-	root: {
-		stack: {
-			children: [
-				{
-					component: {
-						name: 'Home'
-					}
-				},
-			]
-		}
-	}
-};
 
 RegisterScreen.options = {
 	topBar: {

@@ -11,11 +11,15 @@ import { Keyboard,
 		 KeyboardAvoidingView
 		} from 'react-native';
 
-export default class AddEditStoreScreen extends React.Component {
+export default class HomeScreen extends React.Component {
   	constructor(props) {
     	super(props);
     	Navigation.events().bindComponent(this);
   	}
+
+	navigationButtonPressed({ buttonId }) {
+		
+	}
 
 	render() {
 		return (
@@ -24,9 +28,11 @@ export default class AddEditStoreScreen extends React.Component {
 			</View></View>
 		);
 	}
+
+	
 }
 
-AddEditStoreScreen.options = {
+HomeScreen.options = {
 	topBar: {
 		title: {
 			text: 'Store'

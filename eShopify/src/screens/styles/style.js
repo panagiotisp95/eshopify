@@ -5,7 +5,6 @@ const { StyleSheet, PixelRatio } = React;
 export default {
 	//picker in register
 	container: {
-	    flex: 1,
 	    justifyContent: 'center',
 	    alignItems: 'center'
 	},
@@ -60,6 +59,12 @@ export default {
 	    height: 150,
 	},
 
+	profilePicture: {
+	    borderRadius: 50,
+	    marginTop: 10,
+	    width: 150,
+	    height: 150,
+	},
 	// register safearea
 	containerse: {
 	    flex: 1,
@@ -98,6 +103,12 @@ export default {
 	},
 	top: {
 	    marginTop: 100,
+	},
+	homeViews: {
+		marginTop:40,
+		marginBottom:15,
+		marginLeft:15,
+		marginRight:15,
 	},
 	loginScreenContainer: {
 	    flex: 1,

@@ -11,9 +11,7 @@ import { Keyboard,
 		 KeyboardAvoidingView
 		} from 'react-native';
 
-
-
-export default class ProfileScreen extends React.Component {
+export default class HomeScreen extends React.Component {
   	constructor(props) {
     	super(props);
     	Navigation.events().bindComponent(this);
@@ -27,16 +25,17 @@ export default class ProfileScreen extends React.Component {
 		return (
 			<View style={styles.root}><View>
 				
-
 			</View></View>
 		);
 	}
+
+	
 }
 
-ProfileScreen.options = {
+HomeScreen.options = {
 	topBar: {
 		title: {
-			text: 'Profile'
+			text: 'Store'
 		}
 	}
 };

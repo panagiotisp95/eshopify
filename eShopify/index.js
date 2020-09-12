@@ -3,19 +3,22 @@
 import * as React from 'react';
 import { RNNDrawer } from "react-native-navigation-drawer-extension";
 import { Navigation }  from "react-native-navigation"
-import LoginScreen from "./screens/LoginScreen"
-import HomeScreen from "./screens/HomeScreen"
-import SettingsScreen from"./screens/SettingsScreen"
-import RegisterScreen from"./screens/RegisterScreen"
-import ConfirmScreen from"./screens/ConfirmAccountScreen"
-import ForgotPasswordScreen from"./screens/ForgotPasswordScreen"
-import SideMenu from"./screens/SideMenu"
-import DashboardScreen from"./screens/DashboardScreen"
-import EditStoreScreen from"./screens/AddEditStoreScreen"
-import ProfileScreen from"./screens/ProfileScreen"
-import StoreScreen from"./screens/StoreScreen"
-import OrdersScreen from"./screens/OrdersScreen"
-
+import LoginScreen from "./src/screens/LoginScreen"
+import HomeScreen from "./src/screens/HomeScreen"
+import SettingsScreen from"./src/screens/SettingsScreen"
+import RegisterScreen from"./src/screens/RegisterScreen"
+import ConfirmScreen from"./src/screens/ConfirmAccountScreen"
+import ForgotPasswordScreen from"./src/screens/ForgotPasswordScreen"
+import SideMenu from"./src/screens/SideMenu"
+import DashboardScreen from"./src/screens/DashboardScreen"
+import EditStoreScreen from"./src/screens/AddEditStoreScreen"
+import ProfileScreen from"./src/screens/ProfileScreen"
+import StoreScreen from"./src/screens/StoreScreen"
+import OrdersScreen from"./src/screens/OrdersScreen"
+import OwnerStoreScreen from"./src/screens/OwnerStoreScreen"
+import ProductListScreen from"./src/screens/ProductListScreen"
+import AddEditProductScreen from"./src/screens/AddEditProduct"
+import ProductViewScreen from"./src/screens/ProductViewScreen"
 import { 
 		View,
 		Text,
@@ -35,7 +38,10 @@ Navigation.registerComponent('AddEditStore', () => EditStoreScreen);
 Navigation.registerComponent('Profile', () => ProfileScreen);
 Navigation.registerComponent('Store', () => StoreScreen);
 Navigation.registerComponent('Orders', () => OrdersScreen);
-
+Navigation.registerComponent('OwnerStore', () => OwnerStoreScreen);
+Navigation.registerComponent('ProductList', () => ProductListScreen);
+Navigation.registerComponent('AddEditProduct', () => AddEditProductScreen);
+Navigation.registerComponent('ProductView', () => ProductViewScreen);
 
 const loginRoot = {
 	root: {

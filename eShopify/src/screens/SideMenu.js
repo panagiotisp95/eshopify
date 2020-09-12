@@ -8,12 +8,17 @@ const { Navigation } = require('react-native-navigation');
 
 export default class SideMenu extends React.Component {
   	buttonpress(dest){
-	    Navigation.push(this.props.parentComponentId, {
-			component: {
-				name: dest,
-			},
-	    });
-	    RNNDrawer.dismissDrawer();
+  		if(dest == 'Sign out'){
+  			RNNDrawer.dismissDrawer();
+  			Navigation.setRoot(loginRoot);
+  		}else{
+		    Navigation.push(this.props.parentComponentId, {
+				component: {
+					name: dest,
+				},
+		    });
+		    RNNDrawer.dismissDrawer();
+		}
 	}
 
   	render() {
@@ -44,11 +49,25 @@ export default class SideMenu extends React.Component {
 					onPress={() => this.buttonpress('Orders')}
 				/>
 				<Button
-					title='Settings'
+					title='Sign Out'
 					color='#710ce3'
-					onPress={() => this.buttonpress('Settings')}
+					onPress={() => this.buttonpress('Sign out')}
 				/>
 			</View></View>
 		);
   	}
 }
+
+const loginRoot = {
+	root: {
+		stack: {
+			children: [
+				{
+					component: {
+						name: 'Login'
+					}
+				},
+			]
+		}
+	}
+};

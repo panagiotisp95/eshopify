@@ -8,7 +8,9 @@ import { Keyboard,
 		 Button, 
 		 View, 
 		 TextInput,
-		 TouchableWithoutFeedback, 
+		 TouchableWithoutFeedback,
+		 SafeAreaView,
+		 ScrollView,
 		 Alert, 
 		 KeyboardAvoidingView
 		} from 'react-native';
@@ -23,14 +25,14 @@ import {
 
 const list = [
 	{
-	    name: 'New Story',
+	    name: 'New Story 1',
 	    subtitle: 'Protaras',
-	    dest: 'Settings',
+	    dest: 'OwnerStore',
 	},
 	{
-		name: 'New Story',
+		name: 'New Story 2',
 		subtitle: 'Larnaca',
-		dest: 'Settings',
+		dest: 'OwnerStore',
 	}
 ]
 
@@ -43,7 +45,7 @@ const data = {
       strokeWidth: 2 // optional
     }
   ],
-  legend: ["Rainy Days"] // optional
+  legend: ["Month Earnings"] // optional
 };
 const screenWidth = Dimensions.get("window").width-30;
 const chartConfig = {
@@ -70,24 +72,31 @@ export default class DashboardScreen extends React.Component {
   	}
 
   	navigationButtonPressed({ buttonId }) {
-  		if(buttonId === 'addStoreBtn'){
-	  		Navigation.push(
-	  			this.props.componentId, 
+  		if(buttonId == 'addStoreBtn'){
+	  		Navigation.push(this.props.componentId, 
 	  			{
 					component: {
-						name: 'AddEditStore'
+						name: 'AddEditStore',
 					}
 				}
 			)
 	  	}
   	}
 
-  	handleStorePress(storeName){
+  	handleStorePress(screenName, storeName){
   		Navigation.push(
   			this.props.componentId, 
   			{
 				component: {
-					name: storeName
+					name: screenName,
+					options: {
+				    	topBar: {
+				    		title: {
+				    			text: storeName
+				        	}
+				      	}
+				    },
+				    
 				}
 			}
 		)
@@ -95,6 +104,8 @@ export default class DashboardScreen extends React.Component {
 
 	render() {
 		return (
+			<SafeAreaView>
+			<ScrollView style={styles.scrollView}>
 			<View style={styles.root}>
 				{
 					list.map((l, i) => (
@@ -102,8 +113,9 @@ export default class DashboardScreen extends React.Component {
 							key={i}
 							title={l.name}
 							subtitle={l.subtitle}
-							onPress={() => this.handleStorePress(l.dest)}
+							onPress={() => this.handleStorePress(l.dest, l.name)}
 							bottomDivider
+							chevron
 						/>
 					))
 				}
@@ -122,6 +134,8 @@ export default class DashboardScreen extends React.Component {
 					/>
 				</View>
 			</View>
+			</ScrollView>
+			</SafeAreaView>
 		);
 	}
 }

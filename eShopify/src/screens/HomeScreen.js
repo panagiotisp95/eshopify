@@ -15,14 +15,28 @@ import { Keyboard,
 
 const list = [
 	{
-	    name: 'Amy Farha',
+	    name: 'iPhone 11 pro',
 	    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-	    subtitle: 'Vice President'
+	    
 	},
 	{
-		name: 'Chris Jackson',
+		name: 'iPhone 11 Pro Max',
 		avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-		subtitle: 'Vice Chairman'
+		
+	}
+]
+
+
+const list1 = [
+	{
+	    name: 'Samsung s20',
+	    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
+	    
+	},
+	{
+		name: 'Samsung s20',
+		avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
+		
 	}
 ]
 
@@ -53,25 +67,61 @@ export default class HomeScreen extends React.Component {
 		});
 	}
 
+	searchBarOnChange(text){
+
+	}
+
+	viewProduct(product){
+		Navigation.push(this.props.componentId, {
+			component: {
+				name: 'ProductView',
+				options: {
+			    	topBar: {
+			    		title: {
+			    			text: product.name
+			        	}
+			      	}
+			    }
+			}
+		})
+	}
+
 	render() {
 		return (
 			<View style={styles.root}><View>
-				{
-					list.map((l, i) => (
-						<ListItem
+				
+
+			    <View style={styles.homeViews}>
+					<Text>Top products</Text>
+					{
+						list.map((l, i) => (
+							<ListItem
 							key={i}
-							leftAvatar={{ source: { uri: l.avatar_url } }}
+							leftAvatar={{ source: require('./icons/iphone.jpeg')}}
 							title={l.name}
 							subtitle={l.subtitle}
-							onPress={() => Navigation.push(this.props.componentId, {
-								component: {
-									name: 'Settings'
-								}
-							})}
+							onPress={() => this.viewProduct(l)}
 							bottomDivider
 						/>
-					))
-				}
+						))
+					}
+				</View>
+				<View style={styles.homeViews}>
+					<Text>Recommended products</Text>
+					{
+						list1.map((l, i) => (
+							<ListItem
+							key={i}
+							leftAvatar={{ source: require('./icons/samsung.jpeg') }}
+							title={l.name}
+							subtitle={l.subtitle}
+							onPress={() => this.viewProduct(l)}
+							bottomDivider
+						/>
+						))
+					}
+				</View>
+				
 			</View></View>
 		);
 	}
