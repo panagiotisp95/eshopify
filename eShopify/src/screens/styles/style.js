@@ -40,6 +40,26 @@ export default {
 	    marginBottom: 5,
 	},
 
+	//textarea
+	textarea:{
+		height: 100,
+	    fontSize: 14,
+	    borderRadius: 5,
+	    borderWidth: 1,
+	    borderColor: '#eaeaea',
+	    backgroundColor: '#fafafa',
+	    paddingLeft: 10,
+	    marginLeft: 15,
+	    marginRight: 15,
+	    marginTop: 5,
+	    marginBottom: 5,
+	},
+
+	//confirmAccount
+	confirmRoot: {
+		marginTop:15,
+	},
+
 	// register picture
 	containerPicture: {
 	    flex: 1,

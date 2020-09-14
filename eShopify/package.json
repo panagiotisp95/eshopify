@@ -35,6 +35,7 @@
     "react-native-navigation-drawer-extension": "^3.0.0",
     "react-native-paper": "^4.0.1",
     "react-native-picker-select": "^8.0.0",
+    "react-native-ratings": "^7.3.0",
     "react-native-safe-area-context": "^3.1.1",
     "react-native-screens": "^2.9.0",
     "react-native-search-box": "0.0.19",

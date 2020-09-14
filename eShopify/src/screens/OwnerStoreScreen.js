@@ -43,7 +43,7 @@ const list = [
 
 export default class HomeScreen extends React.Component {
   	constructor(props) {
-    	super(props);
+		super(props)
     	Navigation.events().bindComponent(this);
   	}
 

@@ -67,7 +67,7 @@ const chartConfig = {
 
 export default class DashboardScreen extends React.Component {
 	constructor(props) {
-    	super(props);
+		super(props)
     	Navigation.events().bindComponent(this);
   	}
 

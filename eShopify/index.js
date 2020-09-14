@@ -5,13 +5,13 @@ import { RNNDrawer } from "react-native-navigation-drawer-extension";
 import { Navigation }  from "react-native-navigation"
 import LoginScreen from "./src/screens/LoginScreen"
 import HomeScreen from "./src/screens/HomeScreen"
-import SettingsScreen from"./src/screens/SettingsScreen"
 import RegisterScreen from"./src/screens/RegisterScreen"
 import ConfirmScreen from"./src/screens/ConfirmAccountScreen"
 import ForgotPasswordScreen from"./src/screens/ForgotPasswordScreen"
 import SideMenu from"./src/screens/SideMenu"
 import DashboardScreen from"./src/screens/DashboardScreen"
 import EditStoreScreen from"./src/screens/AddEditStoreScreen"
+import Reviews from"./src/screens/Reviews"
 import ProfileScreen from"./src/screens/ProfileScreen"
 import StoreScreen from"./src/screens/StoreScreen"
 import OrdersScreen from"./src/screens/OrdersScreen"
@@ -19,21 +19,16 @@ import OwnerStoreScreen from"./src/screens/OwnerStoreScreen"
 import ProductListScreen from"./src/screens/ProductListScreen"
 import AddEditProductScreen from"./src/screens/AddEditProduct"
 import ProductViewScreen from"./src/screens/ProductViewScreen"
-import { 
-		View,
-		Text,
-		Button,
-		StyleSheet
-		} from 'react-native';
+import { StyleSheet } from 'react-native';
 
 Navigation.registerComponent('SideMenu', () => RNNDrawer.create(SideMenu));
 Navigation.registerComponent('Login', () => LoginScreen);
 Navigation.registerComponent('Register', () => RegisterScreen);
 Navigation.registerComponent('Home', () => HomeScreen);
-Navigation.registerComponent('Settings', () => SettingsScreen);
 Navigation.registerComponent('Confirm', () => ConfirmScreen);
 Navigation.registerComponent('ForgotPassword', () => ForgotPasswordScreen);
 Navigation.registerComponent('Dashboard', () => DashboardScreen);
+Navigation.registerComponent('Reviews', () => Reviews);
 Navigation.registerComponent('AddEditStore', () => EditStoreScreen);
 Navigation.registerComponent('Profile', () => ProfileScreen);
 Navigation.registerComponent('Store', () => StoreScreen);

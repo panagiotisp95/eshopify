@@ -15,7 +15,7 @@ const orders = {};
 
 export default class OrdersScreen extends React.Component {
 	constructor(props) {
-    	super(props);
+		super(props)
     	Navigation.events().bindComponent(this);
   	}
 

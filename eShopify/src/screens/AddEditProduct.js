@@ -5,16 +5,13 @@ import RNCountry from "react-native-countries";
 import RNPickerSelect from 'react-native-picker-select';
 import ImagePicker from 'react-native-image-picker';
 import {Chevron} from 'react-native-shapes'
-import {useState} from 'react';
 import Toast from 'react-native-simple-toast';
-import {Picker} from '@react-native-community/picker';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Modal from 'react-native-modal';
 import {
-			PixelRatio,Image,Animated,StyleSheet,Dimensions,
-			Pressable,Switch,SafeAreaView,ScrollView,
-			TouchableOpacity,Keyboard,Text,Button,View,TextInput,
-			TouchableWithoutFeedback,Alert,KeyboardAvoidingView
+			Image,Pressable,SafeAreaView,ScrollView,
+			Keyboard,Text,Button,View,TextInput,
+			TouchableWithoutFeedback,KeyboardAvoidingView
 		} from 'react-native';
 
 const { Navigation } = require('react-native-navigation');

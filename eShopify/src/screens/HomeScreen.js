@@ -1,6 +1,6 @@
 import * as React from 'react';
 import styles from "./styles/style";
-import { ListItem } from 'react-native-elements';
+import { ListItem, SearchBar } from 'react-native-elements';
 import { RNNDrawer } from "react-native-navigation-drawer-extension";
 import { Navigation }  from "react-native-navigation"
 import { Keyboard, 
@@ -41,8 +41,12 @@ const list1 = [
 ]
 
 export default class HomeScreen extends React.Component {
+	state = {
+		search: null,
+		isLoading: false
+	}
   	constructor(props) {
-    	super(props);
+		super(props)
     	Navigation.events().bindComponent(this);
   	}
 
@@ -66,10 +70,15 @@ export default class HomeScreen extends React.Component {
 			}
 		});
 	}
-
-	searchBarOnChange(text){
-
-	}
+	updateSearch = (search) => {
+		console.log(search)
+		if(search.length>0){
+			this.setState({isLoading: true})
+		}else{
+			this.setState({isLoading: false})
+		}
+		this.setState({search: search});
+	};
 
 	viewProduct(product){
 		Navigation.push(this.props.componentId, {
@@ -86,13 +95,10 @@ export default class HomeScreen extends React.Component {
 		})
 	}
 
-	render() {
-		return (
-			<View style={styles.root}><View>
-				
-
-			    <View style={styles.homeViews}>
-					<Text>Top products</Text>
+	whatToShow(){
+		if(this.state.isLoading){
+			return(
+				<View>
 					{
 						list.map((l, i) => (
 							<ListItem
@@ -106,22 +112,58 @@ export default class HomeScreen extends React.Component {
 						))
 					}
 				</View>
-				<View style={styles.homeViews}>
-					<Text>Recommended products</Text>
-					{
-						list1.map((l, i) => (
-							<ListItem
-							key={i}
-							leftAvatar={{ source: require('./icons/samsung.jpeg') }}
-							title={l.name}
-							subtitle={l.subtitle}
-							onPress={() => this.viewProduct(l)}
-							bottomDivider
-						/>
-						))
-					}
+			)
+		}else{
+			return(
+				<View>
+					<View style={styles.homeViews}>
+						<Text>Top products</Text>
+						{
+							list.map((l, i) => (
+								<ListItem
+								key={i}
+								leftAvatar={{ source: require('./icons/iphone.jpeg')}}
+								title={l.name}
+								subtitle={l.subtitle}
+								onPress={() => this.viewProduct(l)}
+								bottomDivider
+							/>
+							))
+						}
+					</View>
+					<View style={styles.homeViews}>
+						<Text>Recommended products</Text>
+						{
+							list1.map((l, i) => (
+								<ListItem
+								key={i}
+								leftAvatar={{ source: require('./icons/samsung.jpeg') }}
+								title={l.name}
+								subtitle={l.subtitle}
+								onPress={() => this.viewProduct(l)}
+								bottomDivider
+							/>
+							))
+						}
+					</View>
 				</View>
-				
+			)
+		}
+	}
+
+	render() {
+		const { search } = this.state;
+		return (
+			<View style={styles.root}><View>
+				<SearchBar
+					placeholder="Type Here..."
+					showLoading={this.state.isLoading}
+					lightTheme={true}
+					round={true}
+					onChangeText={this.updateSearch}
+					value={search}
+				/>
+				{this.whatToShow()}
 			</View></View>
 		);
 	}

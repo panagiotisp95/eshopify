@@ -35,8 +35,8 @@ import { Keyboard,
 
 export default class LoginScreen extends React.Component {
 	state = {};
-	email = {text: '', borderColor: standardBorderColor, isValid: false};
-	password = {text:'', borderColor: standardBorderColor, isValid: false};
+	email = {text: '', borderColor: standardBorderColor, isValid: true};
+	password = {text:'', borderColor: standardBorderColor, isValid: true};
 
 	constructor(props) {
 		super(props)
@@ -105,7 +105,7 @@ export default class LoginScreen extends React.Component {
 				Navigation.setRoot(mainRoot)
 			}
 		}
-		
+		Navigation.setRoot(mainRoot)
 	}
 
 	showAlert(title, msg){
@@ -121,7 +121,9 @@ export default class LoginScreen extends React.Component {
 
 	authenticateUser(email, password){
 		Realm.open(databaseOptions).then(realm => {
-		    const res = realm.objects(USERS_SCHEMA).filtered('email="${email}" AND password="${password}"')
+			console.log(realm.objects(USERS_SCHEMA))
+			const res = realm.objects(USERS_SCHEMA).filtered('email="${email}"')
+			console.log(res)
 		    if(Object.keys(res).length === 0){
 		    	this.showAlert("Account not found","Please check your credentials or if you are new, register!")
 		    	return false
