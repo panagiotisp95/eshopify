@@ -3,47 +3,17 @@ import styles from "./styles/style";
 import { ListItem, SearchBar } from 'react-native-elements';
 import { RNNDrawer } from "react-native-navigation-drawer-extension";
 import { Navigation }  from "react-native-navigation"
-import { Keyboard, 
-		 Text,
-		 Button, 
-		 View, 
-		 TextInput, 
-		 TouchableWithoutFeedback, 
-		 Alert, 
-		 KeyboardAvoidingView
-		} from 'react-native';
+import { sideMenuOptions } from "../setup/index"
+import { searchProducts,getRecomendedProducts } from '../database/realm';
+import { SafeAreaView,ScrollView,Text,View } from 'react-native';
 
-const list = [
-	{
-	    name: 'iPhone 11 pro',
-	    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-	    
-	},
-	{
-		name: 'iPhone 11 Pro Max',
-		avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-		
-	}
-]
-
-
-const list1 = [
-	{
-	    name: 'Samsung s20',
-	    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-	    
-	},
-	{
-		name: 'Samsung s20',
-		avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-		
-	}
-]
 
 export default class HomeScreen extends React.Component {
 	state = {
 		search: null,
-		isLoading: false
+		isLoading: false,
+		searchResults: {},
+		products: getRecomendedProducts()
 	}
   	constructor(props) {
 		super(props)
@@ -51,29 +21,14 @@ export default class HomeScreen extends React.Component {
   	}
 
 	navigationButtonPressed({ buttonId }) {
-		RNNDrawer.showDrawer({
-			component: {
-				name: "SideMenu",
-				passProps: {
-					animationOpenTime: 300,
-					animationCloseTime: 300,
-					direction: "left",
-					dismissWhenTouchOutside: true,
-					fadeOpacity: 0.6,
-					drawerScreenWidth: "70%" || 445,
-					drawerScreenHeight: "100%" || 700,
-					style: {
-						backgroundColor: "#dcdee0",
-					},
-					parentComponentId: this.props.componentId,
-				},
-			}
-		});
+		RNNDrawer.showDrawer(sideMenuOptions(this.props.email, this.props.componentId));
 	}
+	
 	updateSearch = (search) => {
 		console.log(search)
 		if(search.length>0){
 			this.setState({isLoading: true})
+			this.setState({searchResults: searchProducts(search)}) 
 		}else{
 			this.setState({isLoading: false})
 		}
@@ -97,64 +52,81 @@ export default class HomeScreen extends React.Component {
 
 	whatToShow(){
 		if(this.state.isLoading){
-			return(
-				<View>
-					{
-						list.map((l, i) => (
-							<ListItem
+			return this.loadingResults();
+		}else{
+			return this.normalView();
+		}
+	}
+
+	normalView(){
+		return(
+			<View style={styles.homeViews}>
+				<Text>Recommended products</Text>
+				{
+					this.state.products.map((l, i) => (
+						<ListItem
 							key={i}
-							leftAvatar={{ source: require('./icons/iphone.jpeg')}}
+							leftAvatar={{ source: { uri: l.picture } }}
 							title={l.name}
-							subtitle={l.subtitle}
+							subtitle={l.price}
 							onPress={() => this.viewProduct(l)}
 							bottomDivider
 						/>
-						))
-					}
-				</View>
+					))
+				}
+			</View>
+		)
+	}
+
+	loadingResults(){
+		return(
+			<View style={styles.homeViews}>
+				<Text>Products</Text>
+				{
+					this.state.searchResults.products.map((l, i) => (
+						<ListItem
+							key={i}
+							leftAvatar={{ source: { uri: l.picture } }}
+							title={l.name}
+							subtitle={l.price}
+							onPress={() => this.viewProduct(l)}
+							bottomDivider
+						/>
+					))
+				}
+				<Text>Stores</Text>
+				{
+					this.searchResults(this.state.searchResults.stores)
+				}
+			</View>
+		)
+	}
+
+	searchResults(results){
+		if(results.length>0){
+			return (
+				this.state.searchResults.stores.map((l, i) => (
+					<ListItem
+						key={i}
+						leftAvatar={{ source: { uri: l.picture } }}
+						title={l.name}
+						subtitle={l.city}
+						onPress={() => this.viewProduct(l)}
+						bottomDivider
+					/>
+				))
 			)
 		}else{
-			return(
-				<View>
-					<View style={styles.homeViews}>
-						<Text>Top products</Text>
-						{
-							list.map((l, i) => (
-								<ListItem
-								key={i}
-								leftAvatar={{ source: require('./icons/iphone.jpeg')}}
-								title={l.name}
-								subtitle={l.subtitle}
-								onPress={() => this.viewProduct(l)}
-								bottomDivider
-							/>
-							))
-						}
-					</View>
-					<View style={styles.homeViews}>
-						<Text>Recommended products</Text>
-						{
-							list1.map((l, i) => (
-								<ListItem
-								key={i}
-								leftAvatar={{ source: require('./icons/samsung.jpeg') }}
-								title={l.name}
-								subtitle={l.subtitle}
-								onPress={() => this.viewProduct(l)}
-								bottomDivider
-							/>
-							))
-						}
-					</View>
-				</View>
-			)
+			return ( <Text>    No results</Text> )
 		}
 	}
 
 	render() {
 		const { search } = this.state;
 		return (
-			<View style={styles.root}><View>
+			<SafeAreaView style={styles.containerse}>
+			<ScrollView style={styles.scrollView}>
+			<View style={styles.root}>
 				<SearchBar
 					placeholder="Type Here..."
 					showLoading={this.state.isLoading}
@@ -164,7 +136,9 @@ export default class HomeScreen extends React.Component {
 					value={search}
 				/>
 				{this.whatToShow()}
-			</View></View>
+			</View>
+			</ScrollView>
+			</SafeAreaView>
 		);
 	}
 }
@@ -177,7 +151,7 @@ HomeScreen.options = {
 		leftButtons: [
 			{
 				id: 'sideMenubtn',
-				icon: require('./icons/menuIcon.png'),
+				icon: require('../icons/menuIcon.png'),
 			},
 		],
 	}

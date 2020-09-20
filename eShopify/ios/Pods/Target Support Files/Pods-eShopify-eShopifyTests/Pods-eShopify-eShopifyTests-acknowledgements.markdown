@@ -1629,6 +1629,10 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
+## mailcore2-ios
+
+<html><body>You are being <a href="https://raw.githubusercontent.com/MailCore/mailcore2/master/LICENSE">redirected</a>.</body></html>
+
 ## react-native-image-picker
 
 MIT License

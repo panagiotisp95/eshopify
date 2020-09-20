@@ -1,39 +1,22 @@
 import * as React from 'react';
 import styles from "./styles/style";
-import RNCountry from "react-native-countries";
 import RNPickerSelect from 'react-native-picker-select';
 import ImagePicker from 'react-native-image-picker';
-import {Chevron} from 'react-native-shapes'
-import {useState} from 'react'
-import {Picker} from '@react-native-community/picker';
-import realmContainer from '../realmContainer'
+import Loader from '../modules/loader';
+import { Chevron } from 'react-native-shapes';
+import { sendEmail } from '../services/notifications';
+import { registerUser } from '../database/realm';
+import { showAlert, showTwoButtonAlert } from '../modules/alert';
+import { standardBorderColor, errorBorderColor, okBorderColor } from "./styles/style";
+import { countries } from "../setup/data" 
+import { listPickerStyling } from "../setup/index"
+import { Navigation } from 'react-native-navigation';
 import {
-			PixelRatio,Image,Animated,StyleSheet,Dimensions,
-			Pressable,Switch,Modal,SafeAreaView,ScrollView,
-			TouchableOpacity,Keyboard,Text,Button,View,TextInput,
-			TouchableWithoutFeedback,Alert,KeyboardAvoidingView
+			Image,Pressable,SafeAreaView,ScrollView,Keyboard,
+			Text,Button,View,TextInput,TouchableWithoutFeedback,
+			KeyboardAvoidingView
 		} from 'react-native';
-import {getRealmApp} from '../getRealmApp';
-
-import { 
-    PRODUCTS_SCHEMA,
-    ProductsSchema,  
-    ORDERS_SCHEMA, 
-    OrdersSchema, 
-    STORES_SCHEMA, 
-    StoresSchema, 
-    USERS_SCHEMA, 
-    UsersSchema} from '../allSchemas';
-
-const databaseOptions = {
-  schema: [ProductsSchema, OrdersSchema, UsersSchema, StoresSchema],
-  schemaVersion: 0
-};
-const { Navigation } = require('react-native-navigation');
-const standardBorderColor = '#eaeaea';
-const errorBorderColor = '#f51b07';
-const okBorderColor = '#5eeb34';
-
+const randomString  = require('random-string');
 
 
 export default class RegisterScreen extends React.Component {
@@ -50,9 +33,6 @@ export default class RegisterScreen extends React.Component {
 
 	constructor(props) {
 		super(props)
-		let countryNamesWithCodes = RNCountry.getCountryNamesWithCodes;
-		countryNamesWithCodes.sort((a, b) => a.name.localeCompare(b.name));
-
 		this.handleEmail = this.handleEmail.bind(this);
 		this.handlePhotoTapped = this.handlePhotoTapped.bind(this);
 		this.handlePassword = this.handlePassword.bind(this);
@@ -66,7 +46,8 @@ export default class RegisterScreen extends React.Component {
 		this.handleCountry = this.handleCountry.bind(this);
 
 		this.state = {
-			avatarSource: null,
+			loading: false,
+			avatarSource: '',
 			email: this.email,
 			password: this.password,
 			name: this.name,
@@ -79,7 +60,8 @@ export default class RegisterScreen extends React.Component {
 			validEmail: true,
 			isFocusStyle: false,
 			validPassword: true,
-			countryNameListWithCode: countryNamesWithCodes
+			code: null,
+			countryNameListWithCode: countries
 		}
 	}
 
@@ -257,69 +239,43 @@ export default class RegisterScreen extends React.Component {
 			this.emailInput.focus();
 		}
 		if(isCorrect){
-			this.registerToDB()
-			Navigation.push(this.props.componentId, {
-				component: {
-					name: 'Confirm'
-				}
-			})
+			var str = randomString();
+			var user = this.state;
+			this.setState({ code: str })
+			user.code = str;
+			if(registerUser(user)){
+				this.sendCodeEmail(this)
+			}else{
+				showAlert('Account Exists', 'Account with the email provided already exists')
+			}
 		}
 	}
 
-	registerToDB(){
-		try {
-			Realm.open(databaseOptions).then(realm => {
-				const res = realm.objects(USERS_SCHEMA).filtered(`email="${this.state.email.text}"`)
-			    if(Object.keys(res).length === 0){
-			    	console.log("User not found")
-			    	size = realm.objects(USERS_SCHEMA).length
-				  	realm.write(() => {
-				    	realm.create(USERS_SCHEMA, 
-				    	{
-				    		user_id:size+1 ,
-				    		email: this.state.email.text, 
-				    		password: this.state.password.text[0],
-				    		name: this.state.name.text,
-				    		surname: this.state.surname.text,
-				    		phone: this.state.phone.text,
-				    		address: this.state.address.text[0]+'~'+this.state.address.text[1],
-				    		postalCode: this.state.postalCode.text,
-				    		city: this.state.city.text,
-				    		country: this.state.country.text,
-				    		picture: this.state.avatarSource
-				    	});
-				  	});
-			    }else{
-			    	console.log("User found")
-			    	showAlert('Account Exists', 'Account with the email provided already exists')
-			    }
-			});
-
-		} catch (e) {
-		  	console.log("Error ", e);
-		}
+	sendCodeEmail(component){
+		component.setState({loading: true});
+		sendEmail(component.state.email.text, component.state.code).then((response) => {
+			if( 'status' in response && response.status == 'SUCCESS'){
+				component.setState({loading: false})
+				Navigation.push(component.props.componentId, {
+					component: {
+						name: 'Confirm',
+						passProps: {
+							code: component.state.code,
+							email: component.state.email.text
+						  }
+					}
+				})
+			}else{
+				showTwoButtonAlert('Error', 'We experienced an error sending the email, check internet connection. Try Again?', component.sendCodeEmail, component.alertCallback, component)
+			}
+		})
 	}
 
-	showAlert(title, msg){
-		Alert.alert(
-	      	title,
-	      	msg,
-			[
-				{ text: "OK", onPress: () => console.log("OK Pressed") }
-			],
-			{ cancelable: false }
-	    );
+	alertCallback(component){
+		component.setState({loading: false});
 	}
 
 	render() {
-		var result = [];
-		this.state.countryNameListWithCode.forEach(function(item) {
-			var k = {};
-			k['label'] = item.name;
-			k['value'] = item.code;
-			result.push(k);
-		});
-
 		const placeholder = {
 			label: 'Select a Country...',
 			value: null,
@@ -343,10 +299,11 @@ export default class RegisterScreen extends React.Component {
 			            </View>
 			          </Pressable>
 			        </View>
-
+					<Loader loading={this.state.loading} />
 			        <TextInput 
 			        	textContentType="emailAddress" 
-			        	placeholder="Email" 
+						placeholder="Email" 
+						autoCapitalize = 'none'
 			        	placeholderColor="#c4c3cb" 
 			        	ref={(input) => { this.emailInput = input; }}
 			        	style={{...styles.textInputNormal, borderColor: this.state.email.borderColor }} 
@@ -417,41 +374,11 @@ export default class RegisterScreen extends React.Component {
 			        	onChangeText = {this.handleCity}/>
 			        <RNPickerSelect 
 			        	placeholder={placeholder}
-			          	items={result}
+			          	items={this.state.countryNameListWithCode}
 			          	onValueChange={(value,index) => {this.handleCountry(value,index)}}
-			          	style={{inputIOS: {
-			              			fontSize: 16,
-								    paddingVertical: 12,
-								    paddingHorizontal: 10,
-								    borderWidth: 1,
-								    borderColor: this.state.country.borderColor,
-								    backgroundColor: '#fafafa',
-								    borderRadius: 4,
-								    color: 'black',
-								    paddingRight: 30,
-								    marginLeft: 15,
-								    marginRight: 15,
-								    marginTop: 5,
-								    marginBottom: 5,
-								},
-								inputAndroid: {
-									ontSize: 16,
-								    paddingHorizontal: 10,
-								    paddingVertical: 8,
-								    borderWidth: 0.5,
-								    borderColor: 'purple',
-								    borderRadius: 8,
-								    color: 'black',
-								    paddingRight: 30,
-			  						backgroundColor: 'transparent',
-								},
-								iconContainer: {
-				                  top: 25,
-				                  right: 30,
-				                },
-				              }}
-							textInputProps={{ underlineColorAndroid: 'cyan' }}
-							Icon={() => {return <Chevron size={1.5} color="gray" />;}}/>
+			          	style={listPickerStyling(this.state.country.borderColor)}
+						textInputProps={{ underlineColorAndroid: 'cyan' }}
+						Icon={() => {return <Chevron size={1.5} color="gray" />;}}/>
 			        <Button
 						title="Register"
 						disabled={!this.state.validEmail || !this.state.validPassword}

@@ -2,54 +2,15 @@ import * as React from 'react';
 import styles from "./styles/style";
 import { Navigation }  from "react-native-navigation"
 import { ListItem } from 'react-native-elements';
-import { Icon } from 'react-native-elements'
-import { Keyboard, 
-		 Text,
-		 Button, 
-		 View, 
-		 TextInput, 
-		 TouchableWithoutFeedback, 
-		 Alert, 
-		 KeyboardAvoidingView
-		} from 'react-native';
+import { View } from 'react-native';
+import { storeOwnerOptions } from '../setup/index'
 
-const list = [
-	{
-	    name: 'Product List',
-	    dest: 'ProductList',
-	    num: 0,
-	},
-	{
-		name: 'Pending Orders',
-		dest: 'Orders',
-		num: 1
-	},
-	{
-		name: 'Shipped Orders',
-		dest: 'Orders',
-		num: 2
-	},
-	{
-		name: 'Completed Orders',
-		dest: 'Orders',
-		num: 3,
-	},
-	{
-		name: 'Edit Store Details',
-		dest: 'AddEditStore',
-		num: 4,
-	}
-]
 
 export default class HomeScreen extends React.Component {
   	constructor(props) {
 		super(props)
     	Navigation.events().bindComponent(this);
   	}
-
-	navigationButtonPressed({ buttonId }) {
-		
-	}
 
 	handleStorePress(option){
 		if(option.num == 4){
@@ -85,6 +46,7 @@ export default class HomeScreen extends React.Component {
 					component: {
 						name: option.dest,
 						passProps: {
+							storeid: this.props.storeid,
 					    	show: option.num,
 					    },
 					    options: {
@@ -104,9 +66,8 @@ export default class HomeScreen extends React.Component {
 	render() {
 		return (
 			<View style={styles.root}><View>
-
 				{
-					list.map((l, i) => (
+					storeOwnerOptions.map((l, i) => (
 						<ListItem
 							key={i}
 							title={l.name}
@@ -119,8 +80,6 @@ export default class HomeScreen extends React.Component {
 			</View></View>
 		);
 	}
-
-	
 }
 
 HomeScreen.options = {

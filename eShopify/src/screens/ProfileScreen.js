@@ -1,35 +1,25 @@
 import * as React from 'react';
 import styles from "./styles/style";
 import { Navigation }  from "react-native-navigation"
-import { Keyboard, 
-		 Text,
-		 Button, 
-		 View,
-		 Image,
-		 TextInput, 
-		 TouchableWithoutFeedback, 
-		 Alert, 
-		 KeyboardAvoidingView
-		} from 'react-native';
+import { View,Image,TextInput } from 'react-native';
+import { getUser,updateUser } from '../database/realm';
 
-
-const details = {
-	email:'johnsmith@gmail.com',
-	name: 'John',
-	surname: 'Smith',
-	phone: '+44 76879865',
-	address: '3/2 Maryhill Road',
-	address2: '',
-	postalCode: 'G208BP',
-	city: 'Glasgow',
-}
 
 export default class ProfileScreen extends React.Component {
+	details = getUser(this.props.email)
   	constructor(props) {
 		super(props)
+		this.handleEdit = this.handleEdit.bind(this);
     	this.state = {
-    		editable: false,
-    		details: details
+			editable: false,
+			picture: this.details.picture,
+			email: this.details.email,
+			name: this.details.name,
+			surname: this.details.surname,
+			address: this.details.address,
+			phone: this.details.phone,
+			postalCode: this.details.postalCode,
+			city: this.details.city
     	}
 
     	Navigation.events().bindComponent(this);
@@ -50,6 +40,7 @@ export default class ProfileScreen extends React.Component {
 			});
 		}else if(buttonId === 'donebtn' ){
 			this.setState({editable: false})
+			updateUser(this.state)
 			Navigation.mergeOptions(this.props.componentId, {
 			  	topBar: {
 					rightButtons: [
@@ -63,84 +54,112 @@ export default class ProfileScreen extends React.Component {
 		}
 	}
 
+	handleEdit = (from,text) => {
+		if(from == 'email'){
+			this.setState({email: text})
+		}else if(from == 'name'){
+			this.setState({name: text})
+		}else if(from == 'surname'){
+			this.setState({surname: text})
+		}else if(from == 'phone'){
+			this.setState({phone: text})
+		}else if(from == 'address1'){
+			addresses = this.state.details.address.split('~')
+			this.setState({name: text+"~"+addresses[1]})
+		}else if(from == 'address2'){
+			addresses = this.state.details.address.split('~')
+			this.setState({name: addresses[0]+"~"+text})
+		}else if(from == 'postCode'){
+			this.setState({postalCode: text})
+		}else if(from == 'city'){
+			this.setState({city: text})
+		}
+		console.log(this.details)
+	}
+
 	render() {
+		var picture = { uri: this.state.picture }
+		if(this.state.picture == ''){
+			picture = require('../icons/avatar.png')
+		}
+		addresses = this.state.address.split('~')
 		return (
 			<View style={styles.root}>
 			<View style={styles.container}>
-				<Image style={styles.profilePicture} source={ { uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg' }} />	
+				<Image style={styles.profilePicture} source={ picture } />	
 			</View>
 			<View style={styles.loginScreenContainer}>
 					<TextInput 
 			        	textContentType="emailAddress" 
 			        	placeholder="Email"
-			        	defaultValue={this.state.details.email}
-			        	editable={this.state.editable}
+			        	defaultValue={this.state.email}
+			        	editable={false}
 			        	placeholderColor="#c4c3cb" 
 			        	ref={(input) => { this.emailInput = input; }}
 			        	style={{...styles.textInputNormal}}
-			        	onChangeText = {this.handleEmail} />
+			        	onChangeText = {(text) => this.handleEdit('email',text)}  />
 			        <TextInput 
 			        	textContentType="name" 
 			        	placeholder="Name"
 			        	editable={this.state.editable}
-			        	defaultValue={this.state.details.name}
+			        	defaultValue={this.state.name}
 			        	placeholderColor="#c4c3cb" 
 			        	ref={(input) => { this.nameInput = input; }}
 			        	style={{...styles.textInputNormal}}
-			        	onChangeText = {this.handleName}/>
+			        	onChangeText = {(text) => this.handleEdit("name",text)}/>
 			        <TextInput 
 			        	textContentType="familyName" 
 			        	placeholder="Surname"
-			        	defaultValue={this.state.details.surname}
+			        	defaultValue={this.state.surname}
 			        	placeholderColor="#c4c3cb" 
 			        	ref={(input) => { this.surnameInput = input; }}
 			        	style={{...styles.textInputNormal}}
-			        	onChangeText = {this.handleSurname}
+			        	onChangeText = {(text) => this.handleEdit("surname",text)}
 			        	editable={this.state.editable}/>
 			        <TextInput 
 			        	textContentType="telephoneNumber" 
 			        	placeholder="Phone"
-			        	defaultValue={this.state.details.phone}
+			        	defaultValue={this.state.phone}
 			        	placeholderColor="#c4c3cb" 
 			        	ref={(input) => { this.phoneInput = input; }}
 			        	style={{...styles.textInputNormal}}
-			        	onChangeText = {this.handlePhone}
+			        	onChangeText = {(text) => this.handleEdit("phone",text)}
 			        	editable={this.state.editable}/>
 			        <TextInput 
 			        	textContentType="streetAddressLine1" 
 			        	placeholder="Address Line 1" 
-			        	defaultValue={this.state.details.address}
+			        	defaultValue={addresses[0]}
 			        	placeholderColor="#c4c3cb" 
 			        	ref={(input) => { this.address1Input = input; }}
 			        	style={{...styles.textInputNormal}}
-			        	onChangeText = {this.handleAddress1}
+			        	onChangeText = {(text) => this.handleEdit("address",text)}
 			        	editable={this.state.editable}/>
 			        <TextInput 
 			        	textContentType="streetAddressLine2" 
 			        	placeholder="Address Line 2" 
-			        	defaultValue={this.state.details.address2}
+			        	defaultValue={addresses[1]}
 			        	placeholderColor="#c4c3cb" 
 			        	ref={(input) => { this.address2Input = input; }}
 			        	style={{...styles.textInputNormal}}
-			        	onChangeText = {this.handleAddress2}
+			        	onChangeText = {(text) => this.handleEdit("address",text)}
 			        	editable={this.state.editable}/>
 			        <TextInput 
 			        	textContentType="postalCode" 
 			        	placeholder="Postal Code" 
 			        	placeholderColor="#c4c3cb"
-			        	defaultValue={this.state.details.postalCode}
+			        	defaultValue={this.state.postalCode}
 			        	ref={(input) => { this.postalCodeInput = input; }}
 			        	style={{...styles.textInputNormal}}
-			        	onChangeText = {this.handlePostalCode}
+			        	onChangeText = {(text) => this.handleEdit("postCode",text)}
 			        	editable={this.state.editable}/>
 			        <TextInput 
 			        	textContentType="addressCity" 
 			        	placeholder="City" 
 			        	placeholderColor="#c4c3cb" 
-			        	defaultValue={this.state.details.city}
+			        	defaultValue={this.state.city}
 			        	ref={(input) => { this.cityInput = input; }}
 			        	style={{...styles.textInputNormal}} 
-			        	onChangeText = {this.handleCity}
+			        	onChangeText = {(text) => this.handleEdit("city",text)}
 			        	editable={this.state.editable}/>
 			</View></View>
 		);

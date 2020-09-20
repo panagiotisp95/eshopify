@@ -1,6 +1,9 @@
 import * as React from 'react';
 import styles from "./styles/style";
 import {Text,Button, View, TextInput} from 'react-native';
+import { showAlert } from '../modules/alert'
+import { confirmEmail } from '../database/realm'
+import { loginRoot } from '../setup/index';
 
 const { Navigation } = require('react-native-navigation');
 
@@ -13,12 +16,16 @@ export default class ConfirmAccountScreen extends React.Component {
   	}
 
 	handleCode = (str) => {
-		console.log(str)
 		this.setState({code: str})
 	};
 
 	checkCode(){
-		console.log(this.state.code)
+		if(this.props.code == this.state.code){
+			confirmEmail(this.props.email)
+			Navigation.setRoot(loginRoot)
+		}else{
+			showAlert('Codes Doesn’t match', 'The code provided is does not match with the email')
+		}
 	}
 
 	render() {
@@ -30,6 +37,7 @@ export default class ConfirmAccountScreen extends React.Component {
 					placeholder="Code" 
 					placeholderColor="#c4c3cb"
 					style={styles.textInputNormal} 
+					autoCapitalize = 'none'
 					onChangeText = {this.handleCode}/>
 				<Button
 					title='Done'

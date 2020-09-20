@@ -2,7 +2,9 @@ import * as React from 'react';
 import styles from "./styles/style";
 import { Navigation }  from "react-native-navigation"
 import { ListItem } from 'react-native-elements';
-import { Keyboard, 
+import { getProductsForStore } from '../database/realm';
+
+import { Keyboard, SafeAreaView, ScrollView,
 		 Text,
 		 Button, 
 		 View, 
@@ -12,20 +14,12 @@ import { Keyboard,
 		 KeyboardAvoidingView
 		} from 'react-native';
 
-const products = [{
-	    name: 'iPhone 11 pro',
-	    avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg',
-	    
-	},
-	{
-		name: 'iPhone 11 Pro Max',
-		avatar_url: 'https://s3.amazonaws.com/uifaces/faces/twitter/adhamdannaway/128.jpg',
-		
-	}];
-
 export default class HomeScreen extends React.Component {
   	constructor(props) {
 		super(props)
+		this.state = {
+			products: getProductsForStore(this.props.storeid)
+		}
     	Navigation.events().bindComponent(this);
   	}
 
@@ -41,11 +35,21 @@ export default class HomeScreen extends React.Component {
 									text: 'Add Product'
 								}
 							}
-					    }
+						},
+						passProps:{
+							storeid: this.props.storeid,
+							screenName: 'Add'
+						}
 					}
 				}
 			)
 		}
+	}
+
+	componentDidMount() {
+
+		this.forceUpdate()
+	
 	}
 
 	emptyProducts(){
@@ -58,30 +62,35 @@ export default class HomeScreen extends React.Component {
 
 	hasProducts(){
 		return (
-			<View style={styles.root}><View>
+			<SafeAreaView style={styles.containerse}>
+			<ScrollView style={styles.scrollView}>
+			<View style={styles.root}>
 				{
-						products.map((l, i) => (
-							<ListItem
+					this.state.products.map((l, i) => (
+						<ListItem
 							key={i}
-							leftAvatar={{ source: require('./icons/iphone.jpeg')}}
+							leftAvatar={{ source: { uri: l.picture } }}
 							title={l.name}
-							subtitle={l.subtitle}
-							onPress={() => this.editProduct(l)}
+							subtitle={l.price}
+							onPress={() => this.editProduct(l.product_id)}
 							bottomDivider
 						/>
-						))
-					}
-			</View></View>
+					))
+				}
+			</View>
+			</ScrollView>
+			</SafeAreaView>
 		);
 	}
 
-	editProduct(product){
+	editProduct(product_id){
 		Navigation.push(this.props.componentId, 
   			{
 				component: {
 					name: 'AddEditProduct',
 					passProps: {
-				    	name: product.name,
+						id: product_id,
+						screenName: 'Edit'
 				    },
 					options: {
 				    	topBar: {
@@ -96,7 +105,7 @@ export default class HomeScreen extends React.Component {
 	}
 
 	render() {
-		if(Object.keys(products).length == 0){
+		if(this.state.products.length == 0){
 			return this.emptyProducts();
 		}else{
 			return this.hasProducts();

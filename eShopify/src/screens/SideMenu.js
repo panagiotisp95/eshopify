@@ -1,12 +1,20 @@
 import * as React from 'react';
 import styles from "./styles/style";
-import {Keyboard, Text,Button, View, TextInput, TouchableWithoutFeedback, Alert, KeyboardAvoidingView} from 'react-native';
+import { Button, View } from 'react-native';
 import { RNNDrawer } from "react-native-navigation-drawer-extension";
 import { ListItem } from 'react-native-elements';
-
+import { getUser } from '../database/realm';
+import { loginRoot } from '../setup/index';
 const { Navigation } = require('react-native-navigation');
 
 export default class SideMenu extends React.Component {
+	constructor(props) {
+		super(props)
+		this.state = {
+			user: getUser(this.props.email)
+		}
+	}
+
   	buttonpress(dest){
   		if(dest == 'Sign out'){
   			RNNDrawer.dismissDrawer();
@@ -15,6 +23,9 @@ export default class SideMenu extends React.Component {
 		    Navigation.push(this.props.parentComponentId, {
 				component: {
 					name: dest,
+					passProps: {
+						email:this.props.email
+					}
 				},
 		    });
 		    RNNDrawer.dismissDrawer();
@@ -27,10 +38,10 @@ export default class SideMenu extends React.Component {
 			<View style={styles.top}>
 				<ListItem
 					key={1}
-					leftAvatar={{ source: { uri: 'https://s3.amazonaws.com/uifaces/faces/twitter/ladylexy/128.jpg' } }}
-					title={'Kokos kokou'}
-					subtitle={'LOKO'}
-					onPress={() => this.buttonpress('Dashboard')}
+					leftAvatar={{ source: require('../icons/avatar.png') }}
+					title={this.state.user.name}
+					subtitle={this.state.user.surname}
+					onPress={() => this.buttonpress('Profile')}
 					bottomDivider
 				/>
 				<Button
@@ -58,16 +69,3 @@ export default class SideMenu extends React.Component {
   	}
 }
 
-const loginRoot = {
-	root: {
-		stack: {
-			children: [
-				{
-					component: {
-						name: 'Login'
-					}
-				},
-			]
-		}
-	}
-};

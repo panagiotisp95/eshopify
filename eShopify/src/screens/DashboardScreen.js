@@ -2,72 +2,22 @@ import * as React from 'react';
 import styles from "./styles/style";
 import { ListItem } from 'react-native-elements';
 import { Navigation }  from "react-native-navigation"
-import { Keyboard, 
+import { getStoresForUser,getTotalEarnings } from '../database/realm';
+import { 
 		 Text,
 		 Dimensions,
-		 Button, 
-		 View, 
-		 TextInput,
-		 TouchableWithoutFeedback,
+		 View,
 		 SafeAreaView,
-		 ScrollView,
-		 Alert, 
-		 KeyboardAvoidingView
+		 ScrollView
 		} from 'react-native';
-import {
-		LineChart,
-		BarChart,
-		PieChart,
-		ProgressChart,
-		ContributionGraph,
-		StackedBarChart
-		} from "react-native-chart-kit";
-
-const list = [
-	{
-	    name: 'New Story 1',
-	    subtitle: 'Protaras',
-	    dest: 'OwnerStore',
-	},
-	{
-		name: 'New Story 2',
-		subtitle: 'Larnaca',
-		dest: 'OwnerStore',
-	}
-]
-
-const data = {
-  labels: ["January", "February", "March", "April", "May", "June"],
-  datasets: [
-    {
-      data: [20, 45, 28, 80, 99, 43],
-      color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`, // optional
-      strokeWidth: 2 // optional
-    }
-  ],
-  legend: ["Month Earnings"] // optional
-};
-const screenWidth = Dimensions.get("window").width-30;
-const chartConfig = {
-      backgroundColor: "#e26a00",
-      backgroundGradientFrom: "#fb8c00",
-      backgroundGradientTo: "#ffa726",
-      decimalPlaces: 2, // optional, defaults to 2dp
-      color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-      labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-      style: {
-        borderRadius: 16
-      },
-      propsForDots: {
-        r: "6",
-        strokeWidth: "2",
-        stroke: "#ffa726"
-      }
-    };
 
 export default class DashboardScreen extends React.Component {
 	constructor(props) {
 		super(props)
+		this.state={
+			stores: getStoresForUser(this.props.email),
+			total: getTotalEarnings(this.props.email)
+		}
     	Navigation.events().bindComponent(this);
   	}
 
@@ -83,7 +33,7 @@ export default class DashboardScreen extends React.Component {
 	  	}
   	}
 
-  	handleStorePress(screenName, storeName){
+  	handleStorePress(screenName, storeName, id){
   		Navigation.push(
   			this.props.componentId, 
   			{
@@ -95,7 +45,10 @@ export default class DashboardScreen extends React.Component {
 				    			text: storeName
 				        	}
 				      	}
-				    },
+					},
+					passProps:{
+						storeid: id
+					}
 				    
 				}
 			}
@@ -108,12 +61,12 @@ export default class DashboardScreen extends React.Component {
 			<ScrollView style={styles.scrollView}>
 			<View style={styles.root}>
 				{
-					list.map((l, i) => (
+					this.state.stores.map((l, i) => (
 						<ListItem
 							key={i}
 							title={l.name}
-							subtitle={l.subtitle}
-							onPress={() => this.handleStorePress(l.dest, l.name)}
+							subtitle={l.city}
+							onPress={() => this.handleStorePress("OwnerStore", l.name, l.store_id)}
 							bottomDivider
 							chevron
 						/>
@@ -121,17 +74,7 @@ export default class DashboardScreen extends React.Component {
 				}
 				<View style={styles.chart}>
 				  	<View><Text style={styles.chartTitle}>Earnings</Text></View>
-				  	<LineChart
-						data={data}
-						width={screenWidth}
-						height={220}
-						chartConfig={chartConfig}
-						bezier
-					    style={{
-					      marginVertical: 8,
-					      borderRadius: 16
-					    }}
-					/>
+					<Text>Total: {this.state.total}</Text>
 				</View>
 			</View>
 			</ScrollView>

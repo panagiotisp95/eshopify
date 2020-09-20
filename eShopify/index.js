@@ -1,6 +1,4 @@
 // In index.js of a new project
-
-import * as React from 'react';
 import { RNNDrawer } from "react-native-navigation-drawer-extension";
 import { Navigation }  from "react-native-navigation"
 import LoginScreen from "./src/screens/LoginScreen"
@@ -20,6 +18,7 @@ import ProductListScreen from"./src/screens/ProductListScreen"
 import AddEditProductScreen from"./src/screens/AddEditProduct"
 import ProductViewScreen from"./src/screens/ProductViewScreen"
 import { StyleSheet } from 'react-native';
+import { setupRealm } from "./src/database/realm"
 
 Navigation.registerComponent('SideMenu', () => RNNDrawer.create(SideMenu));
 Navigation.registerComponent('Login', () => LoginScreen);
@@ -37,6 +36,8 @@ Navigation.registerComponent('OwnerStore', () => OwnerStoreScreen);
 Navigation.registerComponent('ProductList', () => ProductListScreen);
 Navigation.registerComponent('AddEditProduct', () => AddEditProductScreen);
 Navigation.registerComponent('ProductView', () => ProductViewScreen);
+
+setupRealm()
 
 const loginRoot = {
 	root: {
@@ -85,3 +86,4 @@ const styles = StyleSheet.create({
 		backgroundColor: 'whitesmoke'
 	}
 });
+

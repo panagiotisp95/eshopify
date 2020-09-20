@@ -6,6 +6,7 @@ import ImagePicker from 'react-native-image-picker';
 import {Chevron} from 'react-native-shapes'
 import {useState} from 'react'
 import {Picker} from '@react-native-community/picker';
+import  { categories } from '../setup/index'
 import {
 			PixelRatio,Image,Animated,StyleSheet,Dimensions,
 			Pressable,Switch,Modal,SafeAreaView,ScrollView,
@@ -18,124 +19,6 @@ const standardBorderColor = '#eaeaea';
 const errorBorderColor = '#f51b07';
 const okBorderColor = '#5eeb34';
 
-categories = [
-	{
-		value:'',
-		label:'Art'
-	},
-	{
-		value:'',
-		label:'Books, Comics & Magazines'
-	},
-	{
-		value:'',
-		label:'Cameras & Photography'
-	},
-	{
-		value:'',
-		label:'Clothes, Shoes & Accessories'
-	},
-	{
-		value:'',
-		label:'Collectables'
-	},
-	{
-		value:'',
-		label:'Computers/Tablets & Networking'
-	},
-	{
-		value:'',
-		label:'Crafts'
-	},
-	{
-		value:'',
-		label:'Dolls & Bears'
-	},
-	{
-		value:'',
-		label:'DVDs, Films & TV'
-	},
-	{
-		value:'',
-		label:'Events Tickets'
-	},
-	{
-		value:'',
-		label:'Garden & Patio'
-	},
-	{
-		value:'',
-		label:'Health & Beauty'
-	},
-	{
-		value:'',
-		label:'Holidays & Travel'
-	},
-	{
-		value:'',
-		label:'Home, Furniture & DIY'
-	},
-	{
-		value:'',
-		label:'Jewellery & Watches'
-	},
-	{
-		value:'',
-		label:'Mobile Phones & Communication'
-	},
-	{
-		value:'',
-		label:'Musical Instruments'
-	},
-	{
-		value:'',
-		label:'Pet Supplies'
-	},
-	{
-		value:'',
-		label:'Pottery, Porcelain & Glass'
-	},
-	{
-		value:'',
-		label:'Property'
-	},
-	{
-		value:'',
-		label:'Sound & Vision'
-	},
-	{
-		value:'',
-		label:'Sporting Goods'
-	},
-	{
-		value:'',
-		label:'Sports Memorabilia'
-	},
-	{
-		value:'',
-		label:'Stamps'
-	},
-	{
-		value:'',
-		label:'Toys & Games'
-	},
-	{
-		value:'',
-		label:'Vehicle Parts & Accessories'
-	},
-	{
-		value:'',
-		label:'Video Games & Consoles'
-	},
-	{
-		value:'',
-		label:'Wholesale & Job Lots'
-	},
-	{
-		value:'',
-		label:'Everything Else'
-	}
-]
 
 export default class AddEditStoreScreen extends React.Component {
 	state = {};

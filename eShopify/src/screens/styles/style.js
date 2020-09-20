@@ -2,6 +2,10 @@ const React = require("react-native");
 
 const { StyleSheet, PixelRatio } = React;
 
+export const standardBorderColor = '#eaeaea';
+export const errorBorderColor = '#f51b07';
+export const okBorderColor = '#5eeb34';
+
 export default {
 	//picker in register
 	container: {

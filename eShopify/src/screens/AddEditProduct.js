@@ -1,13 +1,15 @@
 import * as React from 'react';
 import styles from "./styles/style";
 import productStyles from "./styles/AddEditProductStyle";
-import RNCountry from "react-native-countries";
 import RNPickerSelect from 'react-native-picker-select';
 import ImagePicker from 'react-native-image-picker';
 import {Chevron} from 'react-native-shapes'
 import Toast from 'react-native-simple-toast';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Modal from 'react-native-modal';
+import { standardBorderColor } from "./styles/style";
+import  { categories,quantity,listPickerStyling, conditions, getCategoryByName,getConditionByName } from '../setup/index'
+import { addProduct, updateProduct, getProduct } from '../database/realm'
 import {
 			Image,Pressable,SafeAreaView,ScrollView,
 			Keyboard,Text,Button,View,TextInput,
@@ -15,71 +17,59 @@ import {
 		} from 'react-native';
 
 const { Navigation } = require('react-native-navigation');
-const standardBorderColor = '#eaeaea';
-const errorBorderColor = '#f51b07';
-const okBorderColor = '#5eeb34';
-
-conditions = [
-	{
-		value:'',
-		label:'Brand New'
-	},
-	{
-		value:'',
-		label:'Used'
-	},
-	{
-		value:'',
-		label:'Used, like new'
-	},
-	{
-		value:'',
-		label:'Used, bad condition'
-	},
-	{
-		value:'',
-		label:'Used, for parts'
-	},
-]
 
 export default class AddEditProduct extends React.Component {
   	state = {};
 	name = {text: '', borderColor: standardBorderColor};
-	address = {text:['',''], borderColor: standardBorderColor};
-	postalCode = {text: '', borderColor: standardBorderColor};
-	city = {text: '', borderColor: standardBorderColor};
-	country = {text: '', borderColor: standardBorderColor};
+	brand = {text:'', borderColor: standardBorderColor};
+	condition = {text: '', borderColor: standardBorderColor};
+	quantity = {text: '', borderColor: standardBorderColor};
+	price = {text: '', borderColor: standardBorderColor};
 	category = {text: '', borderColor: standardBorderColor};
+	description = {text: '', borderColor: standardBorderColor};
 	list =[];
 
 	constructor(props) {
 		super(props)
-		let countryNamesWithCodes = RNCountry.getCountryNamesWithCodes;
-		countryNamesWithCodes.sort((a, b) => a.name.localeCompare(b.name));
+		if(this.props.screenName == 'Edit'){
+			var product = getProduct(this.props.id)
+			this.id = this.props.id;
+			this.name.text = product.name;
+			this.category.text = product.category;
+			this.brand.text = product.brand;
+			this.quantity.text = product.quantity;
+			this.condition.text = product.condition;
+			this.price.text = product.price.toString();
+			this.description.text = product.description;
+		}else{
+			this.id = this.props.storeid
+		}
+		console.log(this.id)
 		Navigation.events().bindComponent(this);
 
 		this.handlePhotoTapped = this.handlePhotoTapped.bind(this);
-		this.handleName = this.handleName.bind(this);
-		this.handleAddress1 = this.handleAddress1.bind(this);
-		this.handleAddress2 = this.handleAddress2.bind(this);
-		this.handlePostalCode = this.handlePostalCode.bind(this);
-		this.handleCity = this.handleCity.bind(this);
-		this.handleCountry = this.handleCountry.bind(this);
-		this.handleCategory = this.handleCategory.bind(this);
+		this.handleProductName = this.handleProductName.bind(this);
+		this.handleProductBrand = this.handleProductBrand.bind(this);
+		this.handleProductPrice = this.handleProductPrice.bind(this);
+		this.handleProductCategory = this.handleProductCategory.bind(this);
+		this.handleProductDescription = this.handleProductDescription.bind(this);
+		this.handleProductCondition = this.handleProductCondition.bind(this);
+		this.handleProductQuantity = this.handleProductQuantity.bind(this);
 
 		this.state = {
 			list: this.list,
 			name: this.name,
-			phone: this.phone,
-			address: this.address,
-			postalCode: this.postalCode,
-			city: this.city,
-			country: this.country,
-			validEmail: true,
+			category: this.category,
+			brand: this.brand,
+			quantity: this.quantity,
+			condition: this.condition,
+			price: this.price,
+			description: this.description,
 			isFocusStyle: false,
 			validPassword: true,
 			isModalVisible: false,
-			countryNameListWithCode: countryNamesWithCodes
+			picture: '',
+			id:this.id
 		}
 	}
 
@@ -87,52 +77,46 @@ export default class AddEditProduct extends React.Component {
 	    this.setState({isModalVisible: !this.state.isModalVisible});
 	};
 
-	handleName(str){
+	handleProductName(str){
 		this.name.text = str;
 		this.name.borderColor = standardBorderColor;
 		this.setState({ name: this.name });
 	}
 
-	handleAddress1(str){
-		this.address.text[0] = str;
-		this.address.borderColor = standardBorderColor;
-		this.setState({ address: this.address });
+	handleProductBrand(str){
+		this.brand.text = str;
+		this.brand.borderColor = standardBorderColor;
+		this.setState({ brand: this.brand });
 	}
 
-	handleAddress2(str){
-		this.address.text[1] = str;
-		this.address.borderColor = standardBorderColor;
-		this.setState({ address: this.address });
+	handleProductPrice(str){
+		this.price.text = str;
+		this.price.borderColor = standardBorderColor;
+		this.setState({ price: this.price });
 	}
 
-	handlePostalCode(str){
-		this.postalCode.text = str;
-		this.postalCode.borderColor = standardBorderColor;
-		this.setState({ postalCode: this.postalCode });
+	handleProductDescription(str){
+		this.description.text = str;
+		this.description.borderColor = standardBorderColor;
+		this.setState({ description: this.description });
 	}
 
-	handleCity(str){
-		this.city.text = str;
-		this.city.borderColor = standardBorderColor;
-		this.setState({ city: this.city });
+	handleProductCategory(value,index){
+		this.category.text = value;
+		this.category.borderColor = standardBorderColor;
+		this.setState({ category: this.category });
 	}
 
-	handleCountry(value,index){
-		this.country.text = value;
-		this.country.borderColor = standardBorderColor;
-		this.setState({ country: this.country });
+	handleProductCondition(value,index){
+		this.condition.text = value;
+		this.condition.borderColor = standardBorderColor;
+		this.setState({ condition: this.condition });
 	}
 
-	handleCategory(value,index){
-		this.country.text = value;
-		this.country.borderColor = standardBorderColor;
-		this.setState({ country: this.country });
-	}
-
-	handleCondition(value,index){
-		this.country.text = value;
-		this.country.borderColor = standardBorderColor;
-		this.setState({ country: this.country });
+	handleProductQuantity(value,index){
+		this.quantity.text = value;
+		this.quantity.borderColor = standardBorderColor;
+		this.setState({ quantity: this.quantity });
 	}
 
 	handlePhotoTapped(num) {
@@ -148,8 +132,6 @@ export default class AddEditProduct extends React.Component {
 			this.toggleModal();
 		}else{
 			ImagePicker.showImagePicker(options, response => {
-				//console.log('Response = ', response);
-
 				if (response.didCancel) {
 					console.log('User cancelled photo picker');
 				} else if (response.error) {
@@ -172,32 +154,25 @@ export default class AddEditProduct extends React.Component {
 		}
 	}
 
-	onRegisterPress() {
+	onPhotoAddPress() {
 		this.list.push(null);
 		this.setState({list: this.list})
-		//Navigation.setRoot(mainRoot)
 	}
 
 	navigationButtonPressed({ buttonId }) {
 		if(buttonId === 'doneAddProductbtn'){
-			Toast.show('This is a toast.');
+			if(this.props.screenName == 'Edit'){
+				updateProduct(this.state);
+				Toast.show('Edited Successfully');
+			}else{
+				addProduct(this.state);
+				Toast.show('Added Successfully');
+			}
 			Navigation.pop(this.props.componentId);
 		}
 	}
 
 	render() {
-		var result = [];
-		this.state.countryNameListWithCode.forEach(function(item) {
-			var k = {};
-			k['label'] = item.name;
-			k['value'] = item.code;
-			result.push(k);
-		});
-		const countryPlaceholder = {
-			label: 'Select a Country...',
-			value: null,
-		};
-
 		const categoryPlaceholder = {
 			label: 'Select a Category...',
 			value: null,
@@ -207,7 +182,11 @@ export default class AddEditProduct extends React.Component {
 			label: 'Select a Condition...',
 			value: null,
 		};
-
+		const quantityPlaceholder = {
+			label: 'Select Quantity...',
+			value: null,
+		};
+		const quant = quantity()
 		return (
 			<SafeAreaView style={styles.containerse}>
 			<ScrollView style={styles.scrollView}>
@@ -243,14 +222,14 @@ export default class AddEditProduct extends React.Component {
 									name="plus"
 									color="#656566"
 									backgroundColor="#ffffff"
-									onPress={() => this.onRegisterPress()}
+									onPress={() => this.onPhotoAddPress()}
 								>Add Photo</Icon.Button>
 							) : (
 								<Icon.Button
 									name="plus"
 									color="#656566"
 									backgroundColor="#ffffff"
-									onPress={() => this.onRegisterPress()}
+									onPress={() => this.onPhotoAddPress()}
 									style={productStyles.button}
 								></Icon.Button>
 							)}
@@ -259,206 +238,54 @@ export default class AddEditProduct extends React.Component {
 			        <TextInput 
 			        	textContentType="name" 
 			        	placeholder="Name"
-			        	defaultValue={this.props.name}
+			        	defaultValue={this.state.name.text}
 			        	placeholderColor="#c4c3cb" 
-			        	ref={(input) => { this.nameInput = input; }}
 			        	style={{...styles.textInputNormal, borderColor: this.state.name.borderColor }} 
-			        	onChangeText = {this.handleName}/>
-			        <RNPickerSelect 
-			        	placeholder={categoryPlaceholder}
-			          	items={categories}
-			          	onValueChange={(value,index) => {this.handleCategory(value,index)}}
-			          	style={{inputIOS: {
-			              			fontSize: 16,
-								    paddingVertical: 12,
-								    paddingHorizontal: 10,
-								    borderWidth: 1,
-								    borderColor: this.state.country.borderColor,
-								    backgroundColor: '#fafafa',
-								    borderRadius: 4,
-								    color: 'black',
-								    paddingRight: 30,
-								    marginLeft: 15,
-								    marginRight: 15,
-								    marginTop: 5,
-								    marginBottom: 5,
-								},
-								inputAndroid: {
-									ontSize: 16,
-								    paddingHorizontal: 10,
-								    paddingVertical: 8,
-								    borderWidth: 0.5,
-								    borderColor: 'purple',
-								    borderRadius: 8,
-								    color: 'black',
-								    paddingRight: 30,
-			  						backgroundColor: 'transparent',
-								},
-								iconContainer: {
-				                  top: 25,
-				                  right: 30,
-				                },
-				              }}
-							textInputProps={{ underlineColorAndroid: 'cyan' }}
-							Icon={() => {return <Chevron size={1.5} color="gray" />;}}/>
-					<RNPickerSelect 
-			        	placeholder={conditionPlaceholder}
-			          	items={conditions}
-			          	onValueChange={(value,index) => {this.handleCategory(value,index)}}
-			          	style={{inputIOS: {
-			              			fontSize: 16,
-								    paddingVertical: 12,
-								    paddingHorizontal: 10,
-								    borderWidth: 1,
-								    borderColor: this.state.country.borderColor,
-								    backgroundColor: '#fafafa',
-								    borderRadius: 4,
-								    color: 'black',
-								    paddingRight: 30,
-								    marginLeft: 15,
-								    marginRight: 15,
-								    marginTop: 5,
-								    marginBottom: 5,
-								},
-								inputAndroid: {
-									ontSize: 16,
-								    paddingHorizontal: 10,
-								    paddingVertical: 8,
-								    borderWidth: 0.5,
-								    borderColor: 'purple',
-								    borderRadius: 8,
-								    color: 'black',
-								    paddingRight: 30,
-			  						backgroundColor: 'transparent',
-								},
-								iconContainer: {
-				                  top: 25,
-				                  right: 30,
-				                },
-				              }}
-							textInputProps={{ underlineColorAndroid: 'cyan' }}
-							Icon={() => {return <Chevron size={1.5} color="gray" />;}}/>
+			        	onChangeText = {this.handleProductName}/>
 					<TextInput 
 			        	placeholder="Brand" 
-			        	placeholderColor="#c4c3cb" 
-			        	ref={(input) => { this.address1Input = input; }}
-			        	style={{...styles.textInputNormal, borderColor: this.state.address.borderColor }} 
-			        	onChangeText = {this.handleAddress1}/>
+						placeholderColor="#c4c3cb" 
+						defaultValue={this.state.brand.text}
+			        	style={{...styles.textInputNormal, borderColor: this.state.brand.borderColor }} 
+			        	onChangeText = {this.handleProductBrand}/>
 			        <TextInput 
 			        	placeholder="Price" 
-			        	placeholderColor="#c4c3cb" 
-			        	ref={(input) => { this.address1Input = input; }}
-			        	style={{...styles.textInputNormal, borderColor: this.state.address.borderColor }} 
-			        	onChangeText = {this.handleAddress1}/>
-			        <RNPickerSelect 
-			        	placeholder={conditionPlaceholder}
-			          	items={conditions}
-			          	onValueChange={(value,index) => {this.handleCategory(value,index)}}
-			          	style={{inputIOS: {
-			              			fontSize: 16,
-								    paddingVertical: 12,
-								    paddingHorizontal: 10,
-								    borderWidth: 1,
-								    borderColor: this.state.country.borderColor,
-								    backgroundColor: '#fafafa',
-								    borderRadius: 4,
-								    color: 'black',
-								    paddingRight: 30,
-								    marginLeft: 15,
-								    marginRight: 15,
-								    marginTop: 5,
-								    marginBottom: 5,
-								},
-								inputAndroid: {
-									ontSize: 16,
-								    paddingHorizontal: 10,
-								    paddingVertical: 8,
-								    borderWidth: 0.5,
-								    borderColor: 'purple',
-								    borderRadius: 8,
-								    color: 'black',
-								    paddingRight: 30,
-			  						backgroundColor: 'transparent',
-								},
-								iconContainer: {
-				                  top: 25,
-				                  right: 30,
-				                },
-				              }}
-							textInputProps={{ underlineColorAndroid: 'cyan' }}
-							Icon={() => {return <Chevron size={1.5} color="gray" />;}}/>
-			        <TextInput 
-			        	textContentType="streetAddressLine1" 
-			        	placeholder="Address Line 1" 
-			        	placeholderColor="#c4c3cb" 
-			        	ref={(input) => { this.address1Input = input; }}
-			        	style={{...styles.textInputNormal, borderColor: this.state.address.borderColor }} 
-			        	onChangeText = {this.handleAddress1}/>
-			        <TextInput 
-			        	textContentType="streetAddressLine2" 
-			        	placeholder="Address Line 2" 
-			        	placeholderColor="#c4c3cb" 
-			        	ref={(input) => { this.address2Input = input; }}
-			        	style={{...styles.textInputNormal, borderColor: standardBorderColor }} 
-			        	onChangeText = {this.handleAddress2}/>
-			        <TextInput 
-			        	textContentType="postalCode" 
-			        	placeholder="Postal Code" 
-			        	placeholderColor="#c4c3cb"
-			        	ref={(input) => { this.postalCodeInput = input; }}
-			        	style={{...styles.textInputNormal, borderColor: this.state.postalCode.borderColor }} 
-			        	onChangeText = {this.handlePostalCode}/>
-			        <TextInput 
-			        	textContentType="addressCity" 
-			        	placeholder="City" 
-			        	placeholderColor="#c4c3cb" 
-			        	ref={(input) => { this.cityInput = input; }}
-			        	style={{...styles.textInputNormal, borderColor: this.state.city.borderColor }} 
-			        	onChangeText = {this.handleCity}/>
-			        <RNPickerSelect 
-			        	placeholder={countryPlaceholder}
-			          	items={result}
-			          	onValueChange={(value,index) => {this.handleCountry(value,index)}}
-			          	style={{inputIOS: {
-			              			fontSize: 16,
-								    paddingVertical: 12,
-								    paddingHorizontal: 10,
-								    borderWidth: 1,
-								    borderColor: this.state.country.borderColor,
-								    backgroundColor: '#fafafa',
-								    borderRadius: 4,
-								    color: 'black',
-								    paddingRight: 30,
-								    marginLeft: 15,
-								    marginRight: 15,
-								    marginTop: 5,
-								    marginBottom: 5,
-								},
-								inputAndroid: {
-									ontSize: 16,
-								    paddingHorizontal: 10,
-								    paddingVertical: 8,
-								    borderWidth: 0.5,
-								    borderColor: 'purple',
-								    borderRadius: 8,
-								    color: 'black',
-								    paddingRight: 30,
-			  						backgroundColor: 'transparent',
-								},
-								iconContainer: {
-				                  top: 25,
-				                  right: 30,
-				                },
-				              }}
-							textInputProps={{ underlineColorAndroid: 'cyan' }}
-							Icon={() => {return <Chevron size={1.5} color="gray" />;}}/>
-					<TextInput
+						placeholderColor="#c4c3cb" 
+						defaultValue={this.state.price.text}
+			        	style={{...styles.textInputNormal, borderColor: this.state.price.borderColor }} 
+			        	onChangeText = {this.handleProductPrice}/>
+			        <TextInput
 					    multiline={true}
-					    style={{...styles.textInputNormal, borderColor: this.state.city.borderColor, height: 100 }} 
+					    style={{...styles.textInputNormal, borderColor: this.state.description.borderColor, height: 100 }} 
 					    placeholder='Description'
-					    numberOfLines={4}
-					    onChangeText={(text) => this.setState({text})}
+						numberOfLines={4}
+						defaultValue={this.state.description.text}
+					    onChangeText={this.handleProductDescription}
 					    value={this.state.text}/>
+					<RNPickerSelect 
+			        	placeholder={categoryPlaceholder}
+						items={categories}
+						value={getCategoryByName(this.state.category.text)}
+			          	onValueChange={(value,index) => {this.handleProductCategory(value,index)}}
+			          	style={listPickerStyling(this.state.category.borderColor)}
+						textInputProps={{ underlineColorAndroid: 'cyan' }}
+						Icon={() => {return <Chevron size={1.5} color="gray" />;}}/>
+					<RNPickerSelect 
+			        	placeholder={quantityPlaceholder}
+						items={quant}
+						value={parseInt(this.state.quantity.text,10)}
+			          	onValueChange={(value,index) => {this.handleProductQuantity(value,index)}}
+			          	style={listPickerStyling(this.state.quantity.borderColor)}
+						textInputProps={{ underlineColorAndroid: 'cyan' }}
+						Icon={() => {return <Chevron size={1.5} color="gray" />;}}/>
+					<RNPickerSelect 
+			        	placeholder={conditionPlaceholder}
+						items={conditions}
+						value={getConditionByName(this.state.condition.text)}
+			          	onValueChange={(value,index) => {this.handleProductCondition(value,index)}}
+			          	style={listPickerStyling(this.state.condition.borderColor)}
+						textInputProps={{ underlineColorAndroid: 'cyan' }}
+						Icon={() => {return <Chevron size={1.5} color="gray" />;}}/>
 			      </View>
 			    </View>
 			</TouchableWithoutFeedback>

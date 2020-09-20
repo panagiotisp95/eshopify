@@ -4,14 +4,17 @@ export const ProductsSchema = {
   primaryKey: 'product_id',
   properties: {
     product_id: 'int',
-    product_name: 'string',
+    name: 'string',
     condition: 'string',
     brand: 'string',
     price: 'double',
     quantity: 'int',
+    category: 'string',
     description: 'string',
     reviews: 'Reviews[]',
+    picture: 'string',
     store: {type: 'linkingObjects', objectType: 'Stores', property: 'products'}
+    
   }
 };
 
@@ -21,9 +24,9 @@ export const OrdersSchema = {
   primaryKey: 'order_id',
   properties: {
     order_id: 'int',
-    products_id: 'int',
-    store_id: 'int',
-    user_id: 'int',
+    product_id: 'int',
+    store: {type: 'linkingObjects', objectType: 'Stores', property: 'orders'},
+    user: {type: 'linkingObjects', objectType: 'Users', property: 'orders'},
     status: 'int',
     payment_method: 'string',
     date: 'date'
@@ -44,8 +47,9 @@ export const StoresSchema = {
     country: 'string',
     description: 'string',
     products: 'Products[]',
+    orders: 'Orders[]',
     owner: {type: 'linkingObjects', objectType: 'Users', property: 'stores'},
-    picture: 'data?',
+    picture: 'string',
     reviews: 'Reviews[]'
   }
 };
@@ -64,8 +68,11 @@ export const UsersSchema = {
     postalCode: 'string',
     city: 'string',
     country: 'string',
+    confirmed: 'string',
+    confirmCode: 'string',
+    orders: 'Orders[]',
     stores: 'Stores[]',
-    picture: 'data?',
+    picture: 'string',
     reviews: 'Reviews[]'
   }
 };
@@ -77,6 +84,8 @@ export const ReviewsSchema = {
   properties: {
     reviewId: 'int',
     description: 'string',
-    rating: 'int'
+    rating: 'int',
+    reviewer: {type: 'linkingObjects', objectType: 'Users', property: 'reviews'},
+    product: {type: 'linkingObjects', objectType: 'Products', property: 'reviews'},
   }
 };

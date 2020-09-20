@@ -1,48 +1,32 @@
 import * as React from 'react';
 import styles from "./styles/LoginStyles";
+import { standardBorderColor, errorBorderColor, okBorderColor } from "./styles/style";
 import { Navigation }  from "react-native-navigation"
-
-const assert = require('assert');
-const Realm = require('realm');
-import { 
-    PRODUCTS_SCHEMA,
-    ProductsSchema,  
-    ORDERS_SCHEMA, 
-    OrdersSchema, 
-    STORES_SCHEMA, 
-    StoresSchema, 
-    USERS_SCHEMA, 
-    UsersSchema} from '../allSchemas';
-
-const databaseOptions = {
-  schema: [ProductsSchema, OrdersSchema, UsersSchema, StoresSchema],
-  schemaVersion: 0
-};
-
-const standardBorderColor = '#eaeaea';
-const errorBorderColor = '#f51b07';
-const okBorderColor = '#5eeb34';
+import { authenticateUser, setupRealm } from "../database/realm"
+import { homeRoot } from "../setup/index"
+import { showAlert } from '../modules/alert'
+import { setupDB,printDB } from "../database/realm"
 
 import { Keyboard, 
 		 Text,
 		 Button, 
 		 View, 
 		 TextInput, 
-		 TouchableWithoutFeedback, 
-		 Alert, 
+		 TouchableWithoutFeedback,
 		 KeyboardAvoidingView
 		} from 'react-native';
 
 export default class LoginScreen extends React.Component {
 	state = {};
-	email = {text: '', borderColor: standardBorderColor, isValid: true};
-	password = {text:'', borderColor: standardBorderColor, isValid: true};
+	email = {text: '', borderColor: standardBorderColor, isValid: false};
+	password = {text:'', borderColor: standardBorderColor, isValid: false};
 
 	constructor(props) {
 		super(props)
+		setupDB()
 		this.handleEmail = this.handleEmail.bind(this);
 		this.handlePassword = this.handlePassword.bind(this);
-
+		setupRealm()
 		this.state = {
 			email: this.email,
 			password: this.password
@@ -101,38 +85,13 @@ export default class LoginScreen extends React.Component {
 			this.emailInput.focus();
 		}
 		if(isCorrect){
-			if(this.authenticateUser(this.state.email.text,this.state.password.text)){
-				Navigation.setRoot(mainRoot)
+			var res = authenticateUser(this.state.email.text,this.state.password.text, this.props.componentId)
+			if(res == 1){
+				Navigation.setRoot(homeRoot(this.state.email.text))
+			}else if(res == 0){
+				showAlert("Account not found","Please check your credentials or if you are new, register!")
 			}
 		}
-		Navigation.setRoot(mainRoot)
-	}
-
-	showAlert(title, msg){
-		Alert.alert(
-	      	title,
-	      	msg,
-			[
-				{ text: "OK", onPress: () => (console.log("OK Pressed")) }
-			],
-			{ cancelable: false }
-	    );
-	}
-
-	authenticateUser(email, password){
-		Realm.open(databaseOptions).then(realm => {
-			console.log(realm.objects(USERS_SCHEMA))
-			const res = realm.objects(USERS_SCHEMA).filtered('email="${email}"')
-			console.log(res)
-		    if(Object.keys(res).length === 0){
-		    	this.showAlert("Account not found","Please check your credentials or if you are new, register!")
-		    	return false
-		    }
-		    return true
-		})
-		.catch((error) => {
-			console.log(error);
-		});
 	}
 
 	render() {
@@ -144,6 +103,7 @@ export default class LoginScreen extends React.Component {
 					<Text style={styles.logoText}> eShopify </Text>
 					<TextInput  textContentType="emailAddress" 
 								placeholder="Email" 
+								autoCapitalize = 'none'
 								placeholderColor="#c4c3cb" 
 								ref={(input) => { this.emailInput = input; }}
 								style={{...styles.textInputNormal, borderColor: this.state.email.borderColor }} 
@@ -185,17 +145,5 @@ export default class LoginScreen extends React.Component {
 	}
 }
 
-const mainRoot = {
-	root: {
-		stack: {
-			children: [
-				{
-					component: {
-						name: 'Home'
-					}
-				}
-			]
-		}
-	}
-};
+
 

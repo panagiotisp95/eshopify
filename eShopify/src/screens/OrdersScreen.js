@@ -1,14 +1,13 @@
 import * as React from 'react';
 import styles from "./styles/style";
 import { Navigation }  from "react-native-navigation"
-import { Keyboard, 
+import { ListItem } from 'react-native-elements';
+import { getOrdersForUser } from '../database/realm';
+
+import { Keyboard, SafeAreaView, ScrollView,
 		 Text,
 		 Button, 
-		 View, 
-		 TextInput, 
-		 TouchableWithoutFeedback, 
-		 Alert, 
-		 KeyboardAvoidingView
+		 View
 		} from 'react-native';
 
 const orders = {};
@@ -16,6 +15,9 @@ const orders = {};
 export default class OrdersScreen extends React.Component {
 	constructor(props) {
 		super(props)
+		this.state = {
+			ordersList: getOrdersForUser(this.props.email)
+		}
     	Navigation.events().bindComponent(this);
   	}
 
@@ -31,16 +33,47 @@ export default class OrdersScreen extends React.Component {
 		);
 	}
 
+	viewProduct(product){
+		Navigation.push(this.props.componentId, {
+			component: {
+				name: 'ProductView',
+				options: {
+			    	topBar: {
+			    		title: {
+			    			text: product.name
+			        	}
+			      	}
+			    }
+			}
+		})
+	}
+
 	hasOrders(){
 		return (
-			<View style={styles.root}>
-				<Text>{this.props.show}</Text>
-			</View>
+			<SafeAreaView style={styles.containerse}>
+				<ScrollView style={styles.scrollView}>
+					<View style={styles.root}>
+						<Text>Orders</Text>
+						{
+							this.state.ordersList.map((l, i) => (
+								<ListItem
+									key={i}
+									leftAvatar={{ source: { uri: l.picture } }}
+									title={l.name}
+									subtitle={l.price}
+									onPress={() => this.viewProduct(l)}
+									bottomDivider
+								/>
+							))
+						}
+					</View>
+				</ScrollView>
+			</SafeAreaView>
 		);
 	}
 
 	render() {
-		if(Object.keys(orders).length == 0){
+		if(this.state.ordersList.length == 0){
 			return this.emptyOrders();
 		}else{
 			return this.hasOrders();
